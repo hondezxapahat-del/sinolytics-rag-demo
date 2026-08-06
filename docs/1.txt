@@ -1,0 +1,15 @@
+Chinese models are having a breakout moment
+Chinese AI models have surged on OpenRouter's rankings. Through most of the second half of 2025, they barely registered, a thin sliver next to a wall of American models. That changed in the week of February 2026, when Chinese-model usage overtook U.S. models for the first time. The gap has widened since; Chinese models now account for more than four times the token volume of American ones. DoorDash, Airbnb, and Siemens have all adopted Chinese AI tools, according to reporting. But the response is telling: Airbnb told CNBC its "AI activity primarily runs on U.S.-native models," and that its use of Chinese open-weight models is "limited" and "routed exclusively through U.S.-based, certified providers." Companies seem to draw a clear line between using Chinese technology and being seen to use it.
+
+Sinolytics Radar 242 China's cheap AI flood
+
+Because it's cheap
+Price is the core driver, and the gap is an order of magnitude. DeepSeek V4 Flash charges 0.28 USD per million output tokens; Claude Opus 4.8 charges 25 USD, about 89 times more. OpenRouter's own data team told CNBC that Chinese open-weight models typically run 60% to 90% cheaper than flagship models from Anthropic and OpenAI. OpenRouter's user base skews toward independent developers and cost-sensitive startups rather than large enterprises, so this isn't fully representative of the broader corporate market. The price pressure has intensified further: in the past two weeks, after Tencent's Hy3 and Nvidia's Nemotron 3 Ultra both shipped free tiers, usage swung hard toward free models, with total token volume up roughly 150% in a single week.
+
+A price war, not just a price gap
+Chinese labs are subsidizing models as loss leaders for their parent cloud platforms. The model itself doesn't need to turn a profit if it locks developers into paying for compute, support, and enterprise contracts later. Tencent, in particular, competes on distribution rather than raw model strength, and domestic Chinese consumers have long been reluctant to pay for software, a habit now carried into AI pricing. State backing removes the pressure for near-term profitability, letting labs chase a longer-term goal: becoming the default infrastructure layer developers reach for.
+
+Regulators watching from both sides
+Multiple U.S. House committees have launched a joint investigation, weighing whether the country needs its own open-weight AI strategy so companies aren't forced to choose between expensive U.S. models and Chinese alternatives. At the same time, China's Ministry of Industry and Information Technology has accused Anthropic's Claude Code of harboring a "backdoor" that poses a "serious threat." Whether this curve keeps climbing won't be decided by price alone. It will depend on how both governments' regulators move next.
+
+Note: Header image is AI-generated and for illustrative purposes only. It does not depict a real interface or product.

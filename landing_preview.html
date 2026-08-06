@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Sinolytics — China Strategy & Geopolitics</title>
+<style>
+  :root {
+    --ink: #141414;
+    --paper: #ffffff;
+    --red: #a4161a;
+    --grey: #6b6b6b;
+    --line: #e6e2df;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    overflow-x: hidden;
+  }
+
+  .stage {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    align-items: center;
+  }
+
+  .left {
+    padding: 6vw 5vw;
+  }
+
+  .eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12.5px;
+    letter-spacing: 0.22em;
+    color: var(--red);
+    font-weight: 700;
+    margin-bottom: 28px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 2px;
+    background: var(--red);
+  }
+
+  h1 {
+    font-size: clamp(38px, 5.2vw, 68px);
+    font-weight: 800;
+    line-height: 1.04;
+    letter-spacing: -0.015em;
+    text-transform: uppercase;
+    margin-bottom: 26px;
+  }
+
+  h1 span {
+    color: var(--red);
+  }
+
+  .sub {
+    max-width: 460px;
+    font-size: 16.5px;
+    line-height: 1.65;
+    color: var(--grey);
+    margin-bottom: 44px;
+  }
+
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--red);
+    color: #fff;
+    border: none;
+    padding: 16px 30px;
+    font-size: 14.5px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.18s ease, transform 0.12s ease, gap 0.18s ease;
+  }
+
+  .cta:hover { background: #841216; gap: 18px; }
+  .cta:active { transform: translateY(1px); }
+
+  .cta svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+  .meta-row {
+    display: flex;
+    gap: 40px;
+    margin-top: 56px;
+    padding-top: 28px;
+    border-top: 1px solid var(--line);
+    max-width: 460px;
+  }
+
+  .meta-item .num {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--ink);
+  }
+
+  .meta-item .lbl {
+    font-size: 11.5px;
+    color: var(--grey);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 3px;
+  }
+
+  /* RIGHT: network visual */
+  .right {
+    position: relative;
+    height: 100vh;
+    background:
+      radial-gradient(circle at 62% 40%, #fafafa 0%, #ffffff 55%);
+    border-left: 1px solid var(--line);
+    overflow: hidden;
+  }
+
+  svg.net { width: 100%; height: 100%; }
+
+  .node {
+    fill: var(--red);
+  }
+
+  .node-pulse {
+    fill: none;
+    stroke: var(--red);
+    stroke-width: 1.4;
+    opacity: 0;
+    transform-origin: center;
+    animation: pulse 2.6s ease-out infinite;
+  }
+
+  @keyframes pulse {
+    0%   { r: 4; opacity: 0.7; }
+    100% { r: 22; opacity: 0; }
+  }
+
+  .path-line {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 1;
+    opacity: 0.25;
+    stroke-dasharray: 4 5;
+  }
+
+  .path-line.active {
+    stroke: var(--red);
+    opacity: 0.6;
+    stroke-dasharray: 260;
+    stroke-dashoffset: 260;
+    animation: draw 3.2s ease-in-out infinite;
+  }
+
+  @keyframes draw {
+    0% { stroke-dashoffset: 260; }
+    45% { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: -260; }
+  }
+
+  .city-label {
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    fill: var(--ink);
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .globe-ring {
+    fill: none;
+    stroke: var(--line);
+    stroke-width: 1;
+  }
+
+  @media (max-width: 860px) {
+    .stage { grid-template-columns: 1fr; }
+    .right { height: 46vh; border-left: none; border-top: 1px solid var(--line); }
+    .left { padding: 10vw 7vw; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <div class="left">
+    <div class="eyebrow">Sinolytics</div>
+    <h1>Your <span>China Strategy</span><br>& Geopolitics<br>Experts</h1>
+    <p class="sub">
+      We turn regulatory complexity, supply chain exposure, and shifting policy signals
+      into clear, decision-ready intelligence — built by analysts who read Beijing
+      and Brussels equally well.
+    </p>
+
+    <a class="cta" href="ask_preview.html" style="text-decoration:none;">
+      Start Your Consultation
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M5 12h14M13 6l6 6-6 6"/>
+      </svg>
+    </a>
+
+    <div class="meta-row">
+      <div class="meta-item">
+        <div class="num">2017</div>
+        <div class="lbl">Founded</div>
+      </div>
+      <div class="meta-item">
+        <div class="num">Berlin · Beijing</div>
+        <div class="lbl">Offices</div>
+      </div>
+      <div class="meta-item">
+        <div class="num">24/7</div>
+        <div class="lbl">Geolytics Hub</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="right">
+    <svg class="net" viewBox="0 0 600 800" preserveAspectRatio="xMidYMid slice">
+      <!-- faint globe rings -->
+      <ellipse class="globe-ring" cx="330" cy="400" rx="230" ry="230"/>
+      <ellipse class="globe-ring" cx="330" cy="400" rx="230" ry="90"/>
+      <ellipse class="globe-ring" cx="330" cy="400" rx="90"  ry="230"/>
+      <ellipse class="globe-ring" cx="330" cy="400" rx="230" ry="160"/>
+      <ellipse class="globe-ring" cx="330" cy="400" rx="160" ry="230"/>
+
+      <!-- connection lines -->
+      <path class="path-line active" d="M 230 260 Q 330 330 430 300"/>
+      <path class="path-line" d="M 430 300 Q 480 420 400 520"/>
+      <path class="path-line active" d="M 230 260 Q 260 400 400 520"/>
+      <path class="path-line" d="M 400 520 Q 340 560 250 540"/>
+      <path class="path-line active" d="M 230 260 Q 200 420 250 540"/>
+
+      <!-- Berlin -->
+      <circle class="node" cx="230" cy="260" r="4.5"/>
+      <circle class="node-pulse" cx="230" cy="260" r="4" style="animation-delay:0s"/>
+      <text class="city-label" x="242" y="256">Berlin</text>
+
+      <!-- Beijing -->
+      <circle class="node" cx="430" cy="300" r="4.5"/>
+      <circle class="node-pulse" cx="430" cy="300" r="4" style="animation-delay:0.6s"/>
+      <text class="city-label" x="442" y="296">Beijing</text>
+
+      <!-- Washington -->
+      <circle class="node" cx="400" cy="520" r="4.5"/>
+      <circle class="node-pulse" cx="400" cy="520" r="4" style="animation-delay:1.2s"/>
+      <text class="city-label" x="412" y="516">Washington</text>
+
+      <!-- Brussels -->
+      <circle class="node" cx="250" cy="540" r="4.5"/>
+      <circle class="node-pulse" cx="250" cy="540" r="4" style="animation-delay:1.8s"/>
+      <text class="city-label" x="262" y="536">Brussels</text>
+    </svg>
+  </div>
+</div>
+
+</body>
+</html>

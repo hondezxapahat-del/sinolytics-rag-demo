@@ -1,0 +1,26 @@
+month,brand,model,avg_price_usd,price_cut_pct,segment
+2023-06,BYD,Seagull,9800,0,Entry EV
+2023-09,BYD,Seagull,9200,6.1,Entry EV
+2023-12,BYD,Seagull,8700,11.2,Entry EV
+2024-03,BYD,Seagull,8300,15.3,Entry EV
+2024-06,BYD,Seagull,7900,19.4,Entry EV
+2023-06,Tesla,Model 3,36500,0,Mid-size EV
+2023-09,Tesla,Model 3,34800,4.7,Mid-size EV
+2023-12,Tesla,Model 3,32900,9.9,Mid-size EV
+2024-03,Tesla,Model 3,31200,14.5,Mid-size EV
+2024-06,Tesla,Model 3,29800,18.4,Mid-size EV
+2023-06,Xiaopeng,P7,28900,0,Mid-size EV
+2023-09,Xiaopeng,P7,27100,6.2,Mid-size EV
+2023-12,Xiaopeng,P7,25400,12.1,Mid-size EV
+2024-03,Xiaopeng,P7,23800,17.6,Mid-size EV
+2024-06,Xiaopeng,P7,22600,21.8,Mid-size EV
+2023-06,NIO,ET5,42000,0,Premium EV
+2023-09,NIO,ET5,40500,3.6,Premium EV
+2023-12,NIO,ET5,38700,7.9,Premium EV
+2024-03,NIO,ET5,37200,11.4,Premium EV
+2024-06,NIO,ET5,36000,14.3,Premium EV
+2023-06,Geely,Galaxy E8,22000,0,Mid-size EV
+2023-09,Geely,Galaxy E8,20600,6.4,Mid-size EV
+2023-12,Geely,Galaxy E8,19100,13.2,Mid-size EV
+2024-03,Geely,Galaxy E8,17800,19.1,Mid-size EV
+2024-06,Geely,Galaxy E8,16900,23.2,Mid-size EV

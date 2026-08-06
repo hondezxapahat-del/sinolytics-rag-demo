@@ -1,0 +1,23 @@
+China's desktop AI: Office agent market is consolidating around the ecosystems of Tencent, Alibaba, and ByteDance
+China's desktop AI office agent platforms recorded more than 60 million PC-client visits in June 2026. WorkBuddy ranked first, while Tencent, Alibaba, and ByteDance together accounted for around 93% of measured traffic. Competition is now shifting from launching standalone products toward consolidating AI capabilities around existing workplace ecosystems.
+
+
+Written by
+Weiqing Zhu
+Published on
+July 29, 2026
+Attachment
+Download
+WorkBuddy has established an early lead in desktop traffic
+WorkBuddy recorded 20.97 million PC-client visits in June 2026, accounting for roughly one-third of the measured total. Its traffic was slightly higher than that of the second- and third-ranked platforms combined, giving Tencent an early advantage in the desktop agent market.
+
+Big tech already dominates the competitive landscape
+Tencent-related products generated approximately 32.6 million visits, followed by ByteDance with 14.4 million and Alibaba with 9.2 million. Together, the three companies accounted for around 93% of total traffic, highlighting the importance of existing users, distribution channels and workplace ecosystems.
+
+Sinolytics Radar 243 China's desktop AI
+
+Competition is shifting from product launches to consolidation
+Tencent is reportedly aligning QClaw more closely with WorkBuddy, while Alibaba plans to combine QoderWork, Wukong, and MuleRun into Qwen Office. ByteDance is also exploring deeper integration between Doubao and Feishu, suggesting that leading players are beginning to consolidate previously fragmented agent products.
+
+Traffic leadership does not yet indicate monetization leadership
+The ranking measures PC-client interactions rather than unique users, paid customers or revenue. The next stage of competition will therefore depend on whether platforms can convert traffic into subscriptions and enterprise deployments through stronger workflow integration, data security and implementation capabilities.

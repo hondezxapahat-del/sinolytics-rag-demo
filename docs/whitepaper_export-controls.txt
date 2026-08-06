@@ -1,0 +1,1092 @@
+Your
+China
+Strategy.
+ Chokepoint Politics:
+China’s Export Controls in the
+Era of Great Power Rivalry
+Key Points 3
+China's Export Controls: A Tool for a New World Order 3
+It's About Playing Trump Cards 4
+Dual-use Licenses Are The New Normal 5
+China's Raw Material Export Controls 6
+Table
+of
+Contents.
+Controls Mainly Target Defense and Aerospace 8
+Dr. Jost Wübbeke
+Managing Partner
+jost.wuebbeke@sinolytics.de
+Sinolytics is the leading strategy
+consultancy on China. We offer European
+and U.S. companies in-depth analysis,
+customized strategies and
+recommendations for well-founded
+decisions. We bring together market and
+policy analysis.
+But Impacts Are Strongly Feld Beyond Defense 9
+www.sinolytics.de
+info@sinolytics.de
+U.S. Sources Are Drying Up - But Not Completely 9
+Widespread Collateral Damage 11
+Risk of Weaponization Beyond the U.S. 13
+Technology Export Controls: Keeping Chiense Manufacturing
+Capabilities Within China 13
+China's Technology Export Control Catalogue - A Living Document 15
+Limiting Exports Through Sanction Lists 17
+Martin Catarata
+Senior Consultant, Lead
+Researcher
+martin.catarata@sinolytics.de
+What To Expect Next 19
+Annex: Industries Affected by Chinese Export Controls 25
+• China is strategically using export controls as a geopolitical tool, shifting
+from mostly economic and industrial policy motivations to national
+security-driven policies. These controls are now central to its efforts to
+exercise geopolitical leverage over other countries.
+• Export controls have expanded from raw materials to advanced
+technologies, including dual-use goods and manufacturing know-how.
+China aims to exert pressure by weaponizing supply chains, while at the
+same time making sure that it can maintain its role as central node in global
+value chains.
+• The impact of China’s export controls extends far beyond the U.S., affecting
+global industries and economies. European, Japanese, and South Korean
+companies have faced delays, shortages, and increased costs, highlighting
+the global collateral damage of these policies.
+• Future export control expansions are likely and will target chokepoints where
+China holds dominance, especially in battery materials, advanced
+electronics, and clean energy technologies.
+China’s Export Controls: A Tool for a New World Order
+Key Points
+3
+Anyone looking to understand the impact of politically induced supply chain
+disruptions should consider the case of Chinese graphite exports to Sweden:
+between 2020 and 2023 graphite exports to Sweden dropped sharply, even as
+Sweden’s overall imports and China’s overall exports increased. Although no
+formal ban was announced, it is plausible that China used this as a means to
+exert pressure on battery maker Northvolt to surpress a nascent competitor to
+China’s battery giants. A decline in Chinese graphite exports to Sweden has
+been observable since 2015, which may be linked to the political tensions
+between the two countries during that period. Other countries in Europe that
+host Chinese battery makers, such as Hungary and Poland, in contract have
+seen their graphite imports skyrocket.
+Another example of the impact of supply chain disruptions is the case of U.S.
+drone manufacturer Skydio. Although not directly subject to formal export
+controls, Skydio was sanctioned as a company, which significantly affected its
+operations. In response to Skydio's (minor) exports to Taiwan, China
+sanctioned the company, effectively banning all shipments from China to the
+company. At the time, Skydio’s sole battery supplier was a China-based
+subsidiary of Japan’s TDK.
+Cut off from this critical supply, Skydio had to rely on existing stockpiles and
+began rationing batteries for new drone shipments. The company estimated
+it would take up to six months to qualify a new supplier. This highlights just how
+deeply geopolitics can affect global supply chains and business continuity.
+They are now a favored tool in geopolitical competition and economic
+weaponization, serving for exports what import tariffs do for imports: a tool to
+control trade for strategic purposes. The U.S. controls on AI chips and
+semiconductor manufacturing have set a precedent, and more recently
+expanded to include chip design software and aircraft engines. China has also
+honed its use of export controls, most recently by targeting rare earth elements
+(REE). For both countries, export controls are a means to hinder each other’s
+technological advancement and defense capabilities, or to use as leverage to
+exert political pressure. This strategic use of export controls is now also
+beginning to affect China’s relations with Europe and other countries.
+Export controls and the
+power over supply
+chains have now
+entered the center
+stage of world politics.
+The foundation of this system is the Export Control Law enacted in 2020,
+which underpins all of China’s current export control measures. China is
+particularly known for leveraging its dominant position in critical raw
+materials—such as gallium, synthetic graphite, and REE. By now, it has
+imposed export controls on many materials where it holds market
+dominance. Moreover, China is increasingly extending these controls to
+technologies crucial for global value chains including lithium refining
+processes, LiDAR, and voice recognition systems.
+The Sinolytics team is actively engaged in tracking and forecasting export
+control measures, supporting corporations in anticipating and mitigating
+their effects. This white paper consolidates our analysis of China’s export
+controls and their practical implications. We will also take a look at
+China’s entity lists, which can also be used to restrict exports to certain
+companies. It explores how the system functions, what the intentions are,
+who is impacted, and where China's export control regime may be headed
+next. It is intended as a guide for corporations, policymakers, and policy
+experts.
+4
+It's About Playing Trump Cards
+Since the 1990s, it had already imposed restrictions on the export of several
+raw materials. In 2010, a sharp reduction in China’s export quota for REE sent
+shockwaves through the global economy, causing prices to soar. An
+industrial trauma that still evokes painful memories today. This phase came
+to an end in 2015, when China lost a related dispute at the WTO. Although
+speculation about a return to stricter controls resurfaced during the Trump
+administration, China largely held back—until more recently.
+The current wave of export controls differs significantly from those in the
+past. Earlier controls were primarily driven by economic considerations. As
+China aimed to move up the value-added ladder, it sought to avoid
+becoming merely a raw material supplier, instead using its resources to
+support its own technological advancement. While there have been
+politically motivated cases—such as the alleged short-term ban on rare
+earth exports to Japan in 2010—most past restrictions were rooted in
+economic strategy.
+Increasingly, Chinese export controls are tied to national security concerns
+and serve as a strategic battleground for gaining dominance over
+competitors. This is evident in the fact that most of China’s recent export
+controls are based on dual-use regulations. This shift is deeply rooted in the
+Chinese concept of 'trump cards' or 'killer weapons' (杀手锏). About a
+decade ago, key strategists in Beijing began refining this notion, emphasizing
+the potential to weaponize strategic assets in geopolitical conflicts. The
+strategy even involved deliberately increasing foreign dependence on these
+critical assets.
+China has established a
+clear legislative and
+regulatory framework
+to respond to U.S.
+restrictions in a
+structured and
+assertive manner.
+China’s use of export
+controls is not entirely
+new.
+Today, the rationale
+behind export controls
+has evolved,
+complementing the
+previously dominant
+focus on industrial
+policy.
+The Export Control Law (出口管制法) is at the center of these efforts.
+National security is a key term throughout the law. The key effort of that law
+is to establish the legal basis for a licensing system of dual-use goods.
+Public reporting in Western countries often mischaracterizes China’s export
+controls as outright export bans. However, these controls do not necessarily
+lead to reduced exports for all. Instead, the licensing system functions more
+like a faucet—adjustable to allow more or less flow depending on policy
+objectives. At times, exports may remain largely unaffected, while at other
+times they may be subject to strict controls, as is currently the case with REE
+exports. In only a few cases has China issued a formal export ban, such as on
+gallium, germanium, and antimony exports to the U.S.
+5
+Dual-use Licenses Are The New Normal
+The export control procedures are defined in the Regulations on Export
+Control of Dual-Use Items (两用物项出口管制条例). Under the current
+framework, export licenses are issued on a per-shipment basis and must
+specify the end user. This allows China to exert more precise control over the
+recipients of its exports. However, exporters with robust internal compliance
+systems and a track record of “good operations” may apply for a general
+license, which permits multiple exports of a given item to one or more
+designated end users within a given time frame.
+The Ministry of Commerce (MOFCOM) is responsible for implementing
+export controls and issuing licenses. This task is carried out primarily through
+its subordinate agency, the Bureau for Industrial Security and Import and
+Export Controls (BISIEC, 产业安全与进出口管制局). BISIEC comprises nine
+internal offices, including two licensing offices (Control License Office No. 1
+管制许可一处 and Control License Office No. 2 管制许可二处), one office for
+policy development, and another for technical assessments of export items.
+License applications are initially submitted to provincial-level MOFCOM
+offices. BISIEC then conducts a preliminary review and forwards its
+recommendation to MOFCOM’s leadership for final approval. In cases where
+an export involves items deemed to have a significant impact on national
+security, MOFCOM must also seek approval from the State Council and
+the Central Military Commission.
+The procedural regulations impose a 45-day time limit on MOFCOM for
+processing export license applications. However, there are no specified
+deadlines for cases requiring additional approval from the State Council and
+the Central Military Commission. Meeting the 45-day deadline is currently
+challenging for BISIEC, especially when new export control measures are
+introduced or when application volumes spike. BISIEC is estimated to have a
+staff of approximately 40 to 60 personnel, with each of the two licensing
+In its effort to prepare
+for long-term strategic
+competition with the
+U.S., China has built a
+solid regulatory
+framework for export
+controls.
+offices staffed by only around five individuals.
+In practice, outright denials of license applications are rare. Instead,
+applications that are unlikely to be approved are often left in administrative
+limbo, with no formal decision issued. This indefinite delay serves as a de
+facto rejection, allowing authorities to avoid the political or diplomatic
+implications of an explicit denial.
+6
+China’s Raw Material Export Controls
+The Export Control List for Dual-Use Goods (两用物项出口管制清单)
+enhances transparency and partly aligns China’s controls with other dual use
+export regimes found in other countries and international frameworks. It
+includes a broad range of items commonly regulated to prevent the
+proliferation of weapons of mass destruction (see Illustration).
+These materials are categorized under “Electronics” due to their broad
+application across the electronics industry. Notably, China has imposed
+controls on materials where it holds a dominant position in the global supply
+chain. The illustration below highlights materials China deems strategic—
+either because they serve as potential "trump cards" in geopolitical leverage,
+or because they represent critical bottlenecks where China is heavily reliant
+on external sources.
+China’s export controls
+extend far beyond raw
+materials.
+However, China’s
+extensive export
+controls on a range of
+critical materials stand
+out.
+A look at China’s strategic materials list reveals that the country has now
+imposed export controls on nearly all materials where it believes it holds a
+competitive advantage:
+7
+The inclusion of a mineral on the export control list does not mean that every
+form or derivative of that mineral is restricted. Minerals undergo multiple
+processing steps and can exist in numerous forms—including intermediate
+products, compounds, and alloys. The list of controlled items is highly
+specific, often defined at the HS10 code level, meaning that some variants of
+a material may be restricted while others remain freely exportable.
+For example, certain indium products are now controlled, but Indium Tin
+Oxide (ITO), a critical material for touchscreens, remains exempt. As of May
+2025, our research indicates that 240 raw material items have been
+included in China’s export control list, up from zero in early 2023 (see chart on
+next page). Recognizing this nuanced approach is essential for accurately
+assessing the real impact of China's export controls.
+Mid-2023
+Gallium and
+Germanium
+came first
+Then controls for Antimony and
+manufacturing equipment for
+superhard materials were
+introduced in September the
+same year.
+April 2025
+Finally, seven REE were included
+in the controls, including the
+heavy rare earths samarium,
+dysprosium, terbium, and
+gadolinium. Dysprosium and
+terbium containing magnets are
+included as well (Magnets that
+do not incorporate these rare
+earth elements are excluded
+from the controls).
+February 2025
+Tungsten, tellurium,
+bismuth, indium and
+molybdenum joined the
+club
+Early 2024
+Followed by
+Graphite
+Advantage Minerals Shortage Minerals
+While China controls a
+broad range of
+materials, its export
+controls remain
+relatively precise and
+targeted.
+Illustration: China’s List of Critical Raw Materials. Source: State Geology Institute
+8
+Controls Mainly Target Defense and Aerospace
+The export controls primarily focus on dual-use products—materials with
+both civilian and military applications, but particularly significant for defense
+technologies.
+A closer look at the list of restricted items highlights this strategic intent. For
+example:
+• Gallium nitride (GaN), critical for advanced radar systems in jet fighters
+and satellites
+• Isotropic graphite, used in rocket nozzle throats
+• Samarium-cobalt (SmCo) magnets, essential for high-performance servo
+motors in missile guidance systems
+In 2022, the Pentagon suspended deliveries of new F-35 fighter jets after
+discovering that a magnet in the turbomachine pump contained a
+samarium-cobalt alloy sourced from China. In response, the Biden
+administration mandated the removal of Chinese REE magnets from U.S.
+defense systems by 2026, and all related materials by 2027. However,
+implementing this policy is extremely challenging, as key elements such as
+samarium, dysprosium, and terbium are almost exclusively refined in China.
+The U.S. defense and
+aerospace sectors are
+clearly among the
+primary targets of
+China’s export controls.
+The impact on the
+defense industry,
+particularly in the U.S.,
+but also in other
+countries, is significant.
+9
+But Impacts Are Strongly Felt Beyond Defense
+Defense accounts for only a marginal share of the overall demand for these
+materials. In the case of rare earth elements, the U.S. defense supply chain
+represents less than 0.1% of total consumption. Therefore, the impact of
+export controls extends far beyond the defense sector (see a list of
+affected industries in the annex).
+The impact of export restrictions, particularly on REE, is significantly affecting
+various industries. Among these, the automotive sector is experiencing
+especially severe consequences. Neodymium, dysprosium and terbium are
+critical for the high-performance permanent magnets (NdFeB) used in
+electric vehicle (EV) motors. Despite a decade of global efforts to diversify
+away from Chinese REEs and to reduce dysprosium content in magnets,
+dependence on China remains largely unchanged. The magnets are also
+essential to industries such as wind turbines, hard drive discs, electronics,
+and robotics.
+What sets these controls apart from previous ones is the inclusion of
+intermediate products, specifically magnet materials that contain
+dysprosium and terbium. This marks a rare instance where not just raw
+materials, but also partially processed goods, fall under export restrictions,
+amplifying the challenge for downstream industries like EV manufacturing.
+Many Chinese magnet exporters, suppliers, and manufacturers were caught
+off guard when the export controls took effect. Exports were halted
+immediately, with no grace period. There have even been reports of logistics
+companies facing smuggling allegations after arriving at ports too late for
+scheduled exports. In many cases, stockpiles of permanent magnets were
+only sufficient to cover a few months of production. As a result, real concerns
+have emerged across the industry about magnet shortages and potential
+delays in electric motor deliveries.
+Japanese chemical and trading companies such as Mitsubishi Chemical and
+subsidiaries of Dowa Holdings, which rely heavily on gallium imports from
+China, have voiced serious concerns about potential supply shortages. The
+volume of gallium secured by these firms has dropped significantly. While
+there is no clear evidence yet of a shortage in GaN chips, used in fast
+chargers, adapters, power converters, inverters, amplifiers, and power supply
+units, the supply situation remains fragile due to continued dependency on
+Chinese sources.
+U.S. Sources Are Drying Up – But Not Completely
+Export controls are a crucial tool in the bilateral dispute and trade
+negotiations between China and U.S. China's export controls on REE have
+particularly impacted the U.S., highlighting the vulnerability of American
+industries to China-controlled materials. Recognizing the lack of viable
+alternatives to Chinese supplies, this realization was one of the factors that
+prompted the U.S. to return to the negotiation table. However, after the
+negotiations in Geneva in May 2025, China chose to maintain its export
+controls. This decision led to retaliatory measures from the U.S., which
+imposed export controls on electronic design automation (EDA) software
+and aircraft engines, specifically targeting China's C919 aircraft program.
+The semiconductor
+industry has also been
+impacted by China’s
+export controls on
+gallium, which began in
+2023.
+Export controls serve as bargaining chips in geopolitical negotiations; if
+concessions can be secured in return, they may also be lifted: China
+promised to ease its controls on rare earth elements (REE) for something in
+return. Following the talks between Xi and Trump in early June 2025, and
+ahead of the trade discussions in London in June 2025, China accelerated the
+licensing process for suppliers to three U.S.-based original equipment
+manufacturers (OEMs): Ford, GM, and Stellantis. In London, U.S. and Chinese
+delegations agreed on dropping the export controls.
+Despite these licenses, which are limited to six months, and the London
+agreement, the supply situation for U.S.-based customers and other
+countries remains tense. Any further developments in this area will likely
+depend on the intensity of tensions between the U.S. and China. China is now
+fully aware that the REE controls remain a very powerful tool in its arsenal.
+In other cases, however, China’s export controls effectively amounted to a de
+facto ban. While the U.S. was never a major importer of Chinese gallium (most
+of the material was directed to other countries) there were still some modest
+imports. However, following the implementation of China's export controls in
+August 2023, all direct gallium exports to the U.S. ceased entirely (see
+illustration).
+10
+Unlike Germany, Japan, and South Korea—where exports resumed two to
+three months later under newly issued licenses, at least for a while—U.S.
+gallium imports never recovered. The same pattern applied to antimony:
+exports to the U.S. dropped to a minimum by September 2024 and halted
+completely in the months that followed. This created a de facto embargo,
+which was formalized in December 2024 for gallium, germanium, and
+antimony.
+Rather than applying them broadly across similar materials or end-uses, it
+has adhered to the specific scope outlined in the official regulations. For
+example, restrictions on graphite target certain grades used in rocket and
+missile applications, but do not extend to all graphite products used in
+civilian industries. As a result, companies like General Motors have
+continued to import synthetic graphite powder from their Chinese supplier
+Shanshan, as they were able to import graphite under an HS Code that is not
+controlled by China.
+A key challenge in enforcing export controls is the possibility of re-exports
+via third countries. For example, U.S. import data shows significant volumes
+of gallium arriving from Belgium—a country that may act as a
+transshipment hub, importing gallium from China and then re-exporting it to
+the U.S.
+Another significant challenge is outright smuggling. Given that many of
+these critical raw materials are exported in very small physical volumes,
+detecting illicit shipments is particularly difficult. Recognizing this risk, China’s
+Ministry of Commerce (MOFCOM) recently convened a conference focused
+on cracking down on export control circumvention.
+11
+Widespread collateral damage
+Countries and regions like Europe, South Korea, Japan, and India have
+reported difficulties obtaining licenses and disruptions to their supply chains.
+The export controls on REE introduced in April 2025 have had drastic
+impacts across multiple countries and continue to do so. It appears that
+China’s willingness to use export controls as political leverage, or at least
+accept collateral damage beyond its dispute with the U.S., has notably
+increased in recent months.
+There is enormous collateral damage to other countries, particularly
+through delays in export license approvals, which can significantly disrupt
+supply chains. The introduction of any new control typically brings exports to
+a halt for all countries until new licenses are issued, a process that can take
+several months. For example, it took approximately two to three months for
+gallium exports to resume. Even after exports resumed, the licensing process
+remained complex for everyone, in part because MOFCOM’s licensing team
+is relatively small, leading to continued delays.
+However, the implementation of REE export controls seems to be facing a
+bureaucratic gridlock, causing delays in approvals. This situation suggests
+a potential failure in the execution of China's export control regime. As of
+June 2025, the small licensing team at the Ministry of Commerce (MOFCOM)
+reportedly has to process tens of thousands of license applications,
+contributing to the bottleneck.
+On the other hand,
+China has not adopted
+an expansive
+interpretation of its
+export controls to the
+U.S. in some cases.
+Even for banned
+materials, imports from
+China may not entirely
+cease.
+While the export
+controls are clearly
+targeted at the United
+States, their impact is
+being felt globally.
+This bottleneck is not the same for everyone. Some corporations with good
+relations to MOFCOM were able to get licenses for their suppliers.
+Especially Chinese manufacturers abroad received preferential treatment.
+For instance, Chinese subsidiaries in Vietnam, including Tongwei, Goertek,
+Luxshare and Chervon did not face any supply disruptions for NdFeB
+magnets containing dysprosium.
+In some cases, such as with REE, controls were implemented so abruptly that
+importers had little to no time to prepare. Companies that had not
+preemptively built stockpiles were caught off guard. Even without malicious
+intent, the suddenness of these measures created situations where regular
+exporters risked being accused of smuggling, simply due to procedural
+delays or confusion. In some cases, end-use requirements have compelled
+companies in Europe to disclose sensitive business information, including
+trade secrets and confidential engineering designs such as motor design.
+Stockpiles at automotive OEMs and their suppliers can manage disruptions
+of a few months, but not more. Although licenses have been granted to some
+suppliers of Volkswagen, GM, Stellantis, and Ford, the situation remains very
+tight. Only few licenses to magnet manufacturers supplying European
+carmakers were granted. Many suppliers and carmakers are on the brink of
+stopping production at some plants, as of June 2025.
+It's not just the automotive industry feeling the impact—sectors such as wind
+energy and machinery are also under pressure. For example, the production
+of Tesla’s humanoid robot, Optimus, could face disruptions. While the
+machinery sector typically uses NdFeB magnets in lower-temperature
+applications—making the addition of dysprosium unnecessary and thus
+avoiding export controls—even these dysprosium-free magnets have
+experienced significant delays due to extensive spot checks on their material
+composition.
+12
+Company Public Reaction to REE shortages
+BMW No disruption to production yet, but part of supplier network affected
+Mercedes No disruption to production yet
+Volkswagen No disruption to production yet
+Ford Shut down production of Explorer SUV for a week in May
+Suzuki Stopped production of PHEV Swift
+Maruti Suzuki No direct impact yet
+Bajaj Auto Warned shortage of magnets could impact EV production in July 2025
+Clepa Some automotive suppliers stopped production of some parts
+AAI Raised alarm over shortage of magnets
+Bosch Rare earth bottleneck is affecting its suppliers
+ZF Effect on some of its suppliers
+Tesla Production of Optimus humanoid robot is affected
+Magnosphere The whole car industry is in full panic. They are willing to pay any price.
+Heraeus Magnet recycling operating only at 1% capacity and has to close if sales do not increase
+Currently, the
+automotive OEMs and
+their suppliers face
+severe shortages of REE
+and permanent magnets
+for the manufacture of
+electric vehicles (see
+illustration).
+Illustration: Reports from the automotive industry and suppliers on supply disruptions (as of June 2025).
+Risk of Weaponization Beyond the U.S.
+Any delays or
+restrictions of licenses
+could be aimed at
+pressuring the Dutch
+government to lift
+export restrictions on
+ASML’s lithography
+machines, or at securing
+concessions on tariffs
+imposed on China-made
+electric vehicles.
+In early June 2025, China has signaled to speed up license approval in a
+“green channel” for the EU, after a meeting between commerce minister
+Wang Wentao and and trade commissioner Maros Sefcovic. The key
+question is now whether that will lead to any tangible results. If it does, China
+can probably claim this is due to a protracted process. But a strong sense of
+dependency on China and vulnerability to Chinese policy motives will remain.
+China's exact intentions remain speculative. But if the delays further persist,
+they can only be interpreted as a deliberate and assertive move against
+economy of industrial competing powers in Europe and elsewhere.
+Looking at the timing of the controls, it could also serve as pressure on the EU
+to not cooperate with the U.S. in excluding China from certain supply chains,
+as is currently negotiated in the on-going trade talks between the EU and
+the U.S. Alternatively, it may also reflect a broader economic strategy to
+undermine the competitiveness of European car manufacturers. This
+suggests that targeting foreign competitors or reducing exports to countries
+beyond the U.S. is an intentional feature of China’s export controls. For this
+reason, governments and companies outside the U.S. must remain vigilant.
+There is also fundamental market distortion and industrial policy at work.
+Given China's dominant position in the production of many critical raw
+materials, these controls have had a significant impact on global prices.
+The result is a growing price disparity between Chinese and international
+markets. For example, buyers in Europe are paying 273% more for bismuth
+than their counterparts in China. For antimony, the premium reaches 171%,
+and for gallium, over 160%. These differences translate into a structural
+disadvantage for European manufacturers, putting them at a competitive
+disadvantage compared to their Chinese peers.
+License application documents explicitly prohibit the use of REE magnets in
+defense-related applications. This restriction aligns with similar moves by
+Beijing to curb exports of other critical materials used in military
+technologies, such as gallium and germanium. Gallium and germanium
+imports have become much more difficult in Europe and in March 2025,
+China’s gallium exports dropped markedly, while germanium supplies
+were nearly depleted.
+13
+The defense industry
+outside the United
+States is also a clear
+target of China’s export
+controls.
+Technology Export Controls: Keeping Chinese
+Manufacturing Capabilities Within China
+As China advances technologically, raw materials are no longer the only
+chokepoint it controls in global value chains. Increasingly, Chinese
+companies provide technologies that would be difficult to replace if
+China were to cut off access to foreign firms.
+China’s export controls are continually evolving to match a shifting trade
+and technology landscape. At the same time, officials are steadily
+enhancing the legal tools required to enforce restrictions on foreign
+companies' supply chains. One key mechanism is the set of dual-use export
+restrictions, which target goods with both civilian and military applications
+discussed above.
+The vague language of
+the regulation allows
+Chinese authorities
+significant leeway in
+interpreting what
+qualifies for inclusion,
+covering not just
+military or security
+concerns, but also
+economic
+considerations.
+In parallel, however, MOFCOM and the Ministry of Science and
+Technology (MOST) maintain a separate framework: the Catalogue of
+Prohibited and Restricted Export Technologies (中国禁止出口限制出口技术
+目录). This list focuses on technologies whose export could threaten
+"national security, public interest, or public morality." It distinguishes between
+technologies that are outright prohibited from export and those that are
+restricted, for which export licenses may be granted.
+Indeed, the most recent version of the catalogue, updated in 2023, includes
+technologies from sectors like agriculture, forestry, and animal husbandry—
+areas far removed from traditional security concerns. However, the largest
+focus remains on sectors critical to China’s manufacturing base (see
+graphic below), especially:
+• Computers and electronics manufacturing, such as robot manufacturing
+technologies
+• Instrumentation manufacturing, such as manufacturing technologies of
+thermal measuring instruments and meters
+• Transport equipment manufacturing (rail, air, etc.), such as ship design and
+testing technologies
+14
+These inclusions
+underscore Beijing’s
+determination to keep
+high-value
+manufacturing and
+processing technologies
+within China.
+This likely serves to prevent technology diffusion of Chinese manufacturing
+capacities as Chinese firms expand globally, thereby maintaining the
+country’s dominant manufacturing base.
+A prime example is the prohibition on exporting REE refining and processing
+technologies. China still controls 92% of refined rare earth output, making it
+indispensable in global supply chains. Restricting the export of refining
+technologies helps prevent the development of competing capabilities
+abroad. The fact that this technology is in the prohibited rather than the
+restricted category underscores its strategic sensitivity.
+How potent China’s manufacturing chokepoints can be, has been recently
+demonstrated by the case of Apple’s diversification strategy into India. In
+a bid to keep manufacturing of iPhones within Chinese borders, Chinese
+government officials have reportedly restricted the export of equipment to
+India, where Foxconn and Apple are aiming to build up more manufacturing
+capacity to decrease reliance on China. Additionally, China has implemented
+exit bans on engineers, which would set up the equipment in India. The
+episode showed how difficult diversification away from China can be,
+especially if China continues to ramp up export controls on crucial
+manufacturing equipment. Reportedly, even Chinese companies such as BYD
+have been affected by Chinese restrictions.
+15
+China’s Technology Export Control Catalogue
+– A Living Document
+The Catalogue of Prohibited and Restricted Export Technologies (中国禁止
+出口限制出口技术目录) has undergone several revisions, reflecting China’s
+response to global developments. After remaining unchanged since 2008,
+the catalogue was substantially updated in 2020 – coinciding with the
+introduction of China’s Export Control Law and amid deteriorating
+U.S.–China relations. Subsequent updates were issued in 2023, with a further
+draft published in January 2025.
+Many of the technologies removed are “legacy” sectors where China no
+longer sees strategic value, or where domestic firms have not yet achieved
+technological leadership. For example, the 2025 draft removes technologies
+for traditional Chinese building techniques. Similarly, medical diagnostic
+technologies were removed in 2023, reflecting the lack of Chinese
+international dominance and the sector’s continued reliance on foreign
+high-tech imports.
+By contrast, newly added technologies typically represent areas where
+China has attained global leadership. One prominent example is LiDAR
+(Light Detection and Ranging) technology. In 2023, China added this to its
+restricted list, recognizing the country’s dominant global position: Chinese
+firms hold 77% of the global market, with Hesai alone controlling 33%,
+followed by Robosense (24%) and Huawei (19%).
+While Chinese
+authorities emphasize
+that the number of
+technologies listed has
+declined – from 164 in
+2020 to 134 in 2023 –
+this reduction masks
+important shifts in the
+focus of the list.
+16
+The technology is important for advancements in autonomous driving, an
+area where Chinese companies are seeking global technology leadership.
+Restricting the export of advanced LiDAR technology from China in a
+targeted way could give Chinese automotive companies an advantage in
+bringing AD quickly to market across the globe. Additionally, if China
+completely restricts exports in a crisis scenario, it would have significant
+implications for global supply chains of foreign automotive and industrial
+sectors, providing China significant leverage.
+The newest 2025 draft of the technology controls further tightens
+restrictions, now including lithium processing technologies, such as:
+• LFP (Lithium Iron Phosphate) Cathode Material Preparation Technology (电
+池正极材料制备技术);
+• LMFP (Lithium Manganese Iron Phosphate) Cathode Material Preparation
+Technology (池用磷酸锰铁锂制备技术);
+• Phosphate Cathode Raw Material Preparation Technologies (磷酸盐正极
+原材料制备技术).
+These lithium-related technologies represent a particularly potent
+chokepoint from Beijing’s perspective for three reasons:
+17
+• Monopolistic position: Chinese companies have a monopolistic position
+in the global value chain, accounting for 98% of global LFP active material
+production.
+• Limited impact on current supply chains: Since most lithium processing
+already occurs in China, restricting export of the underlying technologies
+won’t significantly disrupt downstream industries. However, as with REE
+refining technologies, the major goal of export restriction is to prevent
+build-up of processing capacity outside of China that could diminish
+China’s dominant position.
+• Strategic leverage: These technologies are critical to the battery industry,
+a linchpin for electric vehicles and energy storage. Limiting foreign access
+could pressure downstream industries, such as automotive manufacturing,
+amplifying China’s geopolitical leverage.
+The objective is to identify technologies for which export restrictions will not
+significantly harm its own domestic economy, yet effectively safeguard its
+dominant position in global markets, especially with regards to
+manufacturing capabilities. This selective approach allows China to maintain
+leverage over critical supply chains while minimizing potential disruptions to
+its own industrial growth – demonstrating a calculated balance between
+protectionism and economic pragmatism.
+The analysis shows that
+China strategically
+exploits dependencies
+with great precision.
+Limiting Exports Through Sanction Lists
+China now maintains three separate sanctions lists with different scope
+and targets. The oldest one is the so-called Unreliable Entity List (不可靠实
+体清单). It was introduced in 2019 in response to the U.S. including Huawei on
+its Entity List and serves as the counterpart to the U.S. list. Companies
+included on the list are not allowed to import into or export from China, are
+prohibited from investing in China, and could face fines or other legal actions
+(e.g. personnel get visas revoked). The justification for inclusion on the list is
+harm to China’s national security.
+In 2020, China followed up with the introduction of its Export Control Law,
+under which MOFCOM maintains the Export Control List (出口管制管控名单
+). Entities listed are not allowed to purchase any controlled item without a
+special approval from MOFCOM. The scope of the list only covers dual-use
+goods and restricted / prohibited technologies, making it less potent than the
+Unreliable Entity List.
+Lastly, starting in 2021 Chinese agencies started implementing the
+Countermeasures List (反制清单) under its Anti-Foreign Sanctions Law. This
+list is promulgated by the MFA and allows the freeze of assets within China
+and a prohibition of transacting with Chinese organizations and individuals.
+As such its scope is comparable with the Unreliable Entity List, but is targeted
+to mostly counter foreign sanctions.
+Learning from the U.S.,
+China is also
+significantly expanding
+its sanctions regime.
+18
+China currently uses all three lists to exert targeted pressure on individual
+companies, rather than using broad strokes as with its general export
+controls. As tensions with the U.S. have ratcheted up, increasingly more
+companies are included in the lists (see illustration), oftentimes companies
+being added to several lists at once. The Unreliable Entity List, for example,
+has grown from two entries in early 2023 to 51 in 2025. The Countermeasures
+List has seen even larger growth, rising to a total of 98 listed companies since
+its inception in 2021. After securing an interim deal with the U.S. in April, China
+has also paused sanctions on a few U.S. companies, directly drawing a
+connection between these companies inclusions on the sanctions list and
+the ongoing tariff escalation. This has further made it clear that inclusion on
+these lists for companies hinges not only on their own actions, but is
+dependent on overall geopolitical considerations.
+First, only U.S. companies have been included on any of these lists so far.
+Most of these companies are included either in retaliation to U.S. sanctions or
+for their participation in weapons sales to Taiwan. Second, the companies
+included in the lists are mostly situated in the defense or aerospace industry,
+such as subsidiaries of Boeing, Raytheon or Lockheed Martin. These
+companies mostly did not have major footprints and imports into China
+anyway, minimizing the harm inflicted on Chinese companies. However, as
+the inclusion of Skydio mentioned in the beginning shows, the inclusion on
+these lists can have major implications for the listed companies, even if they
+don’t sell into the Chinese market.
+Even though China’s use
+of sanctions has
+increased, it is still a
+very targeted use of
+these instruments.
+19
+A notable exception to the focus on the defense sector is the inclusion of the
+PVH Cooperation, a luxury clothing company. The justification for the
+inclusion in the Unreliable Entity List is the company’s market discrimination
+due to dropping suppliers situated in Xinjiang for human rights abuses.
+Another exception is the case of Illumina, a U.S. biotech company, which has
+been added to the list in a tit-for-tat for the exclusion of Chinese biotech
+company BGI from the U.S. market. The examples show that national security
+concerns are highly intertwined with economic and political considerations
+in the usage of China’s sanctions regime.
+By establishing three distinct sanctions lists China has created a multi-tiered
+framework that mirrors U.S. tools while maintaining its own legal and political
+logic. Although the application so far remains targeted, focusing almost
+exclusively on U.S. firms in sensitive sectors like defense and aerospace, it is
+likely that China will broaden the scope to more industries and other
+countries in the future. The growing use of sanctions by China to retaliate
+should also concern European companies. If tensions with the EU rise,
+companies need to brace for retaliation by the Chinese government.
+China is far from finished when it comes to export controls – there remains
+significant untapped and developing potential. How aggressively China will
+use these tools depends on the intensity of geopolitical tensions. As seen in
+recent months, export controls and sanctions are increasingly becoming a
+tool of tit-for-tat escalation as with the U.S. export halt of EDA software
+and aircraft engines, much like tariffs before them. Chinese tools are
+primarily developed in response to the U.S., but as recent events have shown,
+China may also be willing to use them to exert pressure on the EU and other
+countries.
+As China's innovation ecosystem matures and combines with its powerful
+manufacturing base, the country will also likely gain control over more
+critical technologies – and could restrict their export accordingly.
+Anticipating such moves will become essential for both companies and
+policymakers in Europe. Understanding where new dependencies might
+emerge – and where China is likely to assert control – will be key to ensuring
+resilience in global value chains.
+Whether an industry becomes a candidate for export controls depends on
+four key factors that shape its strategic value:
+• Chokepoint Leverage: China is likely to focus on areas where it dominates
+critical raw materials or technologies, allowing it to hold a decisive
+chokepoint in global supply chains.
+• U.S. Vulnerability: Export measures will target sectors where the U.S. has
+not yet developed meaningful resilience or alternative sources, with the
+defense sector remaining the primary target.
+• Limited Domestic Blowback: Beijing will avoid restrictions that would
+significantly harm its own high-value industries, especially those
+positioned for global growth and technological leadership.
+• Public and Market Impact: Measures that trigger media attention or
+market disruptions — even beyond the directly affected industries — are
+more likely to be used, as they heighten the perceived threat and
+psychological impact on the U.S. and its allies.
+China’s evolving
+sanctions regime
+reflects a strategic shift
+toward a more
+structured and
+assertive use of
+economic statecraft.
+What To Expect Next
+20
+Based on these criteria, we identify a range of possible measures, segmented
+into three categories (without claiming to be exhaustive). Base case
+measures are those likely to be implemented under the current level of
+tensions, causing limited harm to China’s own industries while pressuring
+global technology value chains.
+For example, it can add more types of REE, indium, graphite, etc. In addition, it
+can add other materials, such as magnesium, fluorspar, or mica sheets, where
+it has dominant mining capacity. Attention may also shift to materials where
+China’s dominance is less pronounced, such as tin and zinc.
+An area, where China has significant room to exert leverage due to its
+dominant position in the supply chain, is in raw materials and products for
+battery and energy storage. China could restrict upstream materials and
+products, such as more types of synthetic graphite, as well as lithium
+hydroxide, lithium hexafluorophosphate and cobalt hydroxide, but also
+various chemicals necessary for the battery production. China could also
+expand its technology restrictions to cathode and anode manufacturing to
+prevent the build-up of significant manufacturing capacities for the battery
+sector outside China.
+China may also choose to restrict the export of advanced materials and
+chemicals such as graphene, advanced polymers and composites, cerium
+and cerium oxide slurry for Chemical Mechanical Planarization (CMP), and
+tantalum powder for capacitors due to their strategic importance in
+high-tech industries and national security. These materials are critical for
+the production of semiconductors, lasers, aerospace components, and
+advanced electronics—sectors where technological leadership is closely tied
+to economic and military power.
+irst, China still has not
+exhausted its potential
+for restricting raw
+materials.
+Critical Minerals and
+Raw Materials
+Expansion of currently
+controlled raw
+materials
+• Magnesium
+• Fluorspar
+• Mica sheets
+• Zinc
+• Tin
+Battery and Energy
+Storage
+Battery-grade and other
+products of synthetic
+graphite
+• Lithium hydroxide
+• Lithium hexafluorophosphate
+• Cobalt hydroxide
+• Battery Cathode and Manufacturing
+Technology
+• Chemicals (e.g. lithium hexafluorophosphate)
+• High-Purity Alumina
+Advanced Materials
+and Chemicals
+Graphene
+• Advanced polymers and composites
+• Cerium and Cerium Oxide Slurry for CMP
+• Yttrium aluminum garnet
+• Tantalum powder for capacitors
+Illustration: Potential export control expansions in a base case scenario
+21
+Heightened and extreme scenario measures reflect options that might be
+considered in the context of a significantly escalating trade conflict with
+the U.S. These would entail greater costs to China’s own economy and may
+conflict with other strategic goals, such as the global expansion of China’s
+own national champions.
+In a heightened scenario, we could for example see China restrict materials
+that would significantly harm its own electronics industry, which is heavily
+reliant on exports. Examples in this category are inverters, sensors, electric
+motor components (beyond magnets), and silicon carbide wafers. The logic
+would be to keep as much value-add within the country while still allowing
+finished end products to be exported. In this scenario, China could also
+restrict exports of goods that would provide high leverage but would also
+entail significant international reputational damage, such as goods and
+components in the biotech sector. Examples are active pharmaceutical
+ingredients and precursors, but also vaccines, and antibiotics and antivirals.
+Another area in which China leads, but that would entail high reputational
+costs if China restricts it, is in the clean energy sector. China has built up
+significant capacity in manufacturing clean energy components, such as
+solar cell manufacturing technology, PV glass, and inverters. Restricting
+these goods would lead to significant problems in the clean energy transition
+of other countries and give China considerable leverage, albeit at high cost.
+Lastly, China might restrict exports of printed circuit boards (PCBs) and
+copper clad laminates, to protect its strategic position in the global
+electronics industry. PCBs are foundational to all electronic devices, and
+China is a leading supplier. Restricting these technologies could cause
+significant damage in many downstream industries, but could also hurt
+Chinese own electronics companies.
+Biotechnology
+• Active Pharmaceutical Ingredients (API) and
+precursors
+• Vaccines
+• Antibiotics and antivirals
+• Gene Sequences
+• CRISPR Gene Editing Tools
+• Medical imaging isotopes
+Clean Energy and Power
+Electronics
+• Solar cell manufacturing technology
+• Photovoltaic glass
+• Inverter
+• Electric motor components
+Electronics
+components
+• Printed Circuit Boards and copper clad
+laminate
+• Tellurium Cadmium Crystals
+• Drone components
+• Silicon Carbide Wafers
+• Sensors
+Emerging
+Technologies
+• Components for quantum computing
+components
+Illustration: Potential export control expansions in a heightened scenario
+22
+In an extreme scenario, in which China would basically enforce a decoupling
+from the Western hemisphere, it could also restrict the export of technology
+in which Chinese companies have become technology leaders. We believe
+that as a last resort, China might fall back on prohibiting exports of battery
+cells and modules – basically disrupting global expansion plans by CATL –
+as well as drones – significantly hurting DJI and others (Drone exports are
+currently restricted, but can still flow with export licenses). Furthermore, China
+could decide to also restrict global companies access to China’s
+manufacturing capacities in extremely sensitive areas, such as legacy chip
+manufacturing, semiconductor backend manufacturing, or smartphone /
+electronics manufacturing. These measures would be nuclear options,
+hurting Chinese companies as much as foreign ones and would lead to a de
+facto decoupling
+Electric Vehicles and
+Battery Supply Chain
+• Battery cells and modules
+• Electric vehicle platforms/components
+Industrial and
+Automation Systems • Industrial automation systems
+Electronics and
+Consumer Devices
+• Smartphone parts
+• Electronic products across the board
+• Fiber optic components
+Illustration: Potential export control expansions in an extreme scenario
+Defense and Surveillance
+Technologies • Drones
+Semiconductor Supply
+Chain
+• Semiconductors assembled and packaged in
+China
+• Legacy chip (>28nm) manufacturing capacity
+Strategic Supply Chain Resilience
+Mitigating the impact of export controls and strengthening the resilience of
+supply chains is a critical challenge shared by both corporations and
+governments. In the current environment, many responses are reactive—
+focused on short-term fixes to secure immediate access to critical inputs.
+However, effective action also demands a long-term strategy to insulate
+supply chains from geopolitical risk. Developing such strategies is inherently
+complex and must be tailored to the specific circumstances of each
+company and government. Nonetheless, several general principles can help
+guide this process:
+23
+In today’s increasingly tense geopolitical climate, companies must be
+proactive in managing their exposure to potential disruptions, including
+those stemming from Chinese export controls. These controls can be sudden
+and far-reaching, affecting not only direct suppliers but also the deeper
+layers of global supply chains. To prepare effectively, businesses need a
+structured and strategic approach to identifying and mitigating these risks.
+The first step is to gain a clear understanding of your company’s
+dependencies on China. This means going beyond the surface level of
+tier-1 suppliers and mapping out the full supply chain, including sub-tier
+suppliers that may not be immediately visible. Many critical inputs—such as
+REE, specialty chemicals, or electronic components—are often sourced
+indirectly from China, even when the immediate supplier is located elsewhere.
+Without this visibility, companies risk being blindsided by disruptions that
+originate deep within their supply networks. Once these dependencies are
+identified, it is essential to adopt a geopolitical mindset. Building resilience
+in the supply chain often involves additional costs. While these measures
+may seem inefficient from a traditional cost-optimization perspective, they
+are in fact strategic investments and like an insurance premium. When
+disruptions occur, resilient supply chains can prevent production halts,
+revenue losses, and reputational damage.
+However, resilience cannot be built everywhere at once. Attempting to
+overhaul the entire supply chain simultaneously would be prohibitively
+expensive and operationally overwhelming. Instead, companies should
+focus their efforts on the most critical areas – those where a disruption
+would have the most severe impact on operations, customer commitments, or
+regulatory compliance. Prioritization should be based on a combination of
+factors, including the level of dependency on risk countries, the availability of
+alternatives, and the potential economic consequences of a supply
+interruption.
+A key component of this targeted approach is geopolitical inventory
+management. Traditional just-in-time models, while efficient under stable
+conditions, leave companies vulnerable in times of crisis. Inventories are a
+common tool for managing supply chain disruptions, but they are often built
+in response to market-driven factors, with geopolitical risks still playing a
+limited role in inventory planning. For high-risk materials, it is advisable to
+maintain buffer inventories that cover at least three to six months of supply.
+This provides a crucial cushion against sudden export restrictions or
+logistical bottlenecks, especially for inputs that are difficult to source
+elsewhere or require long lead times.
+In parallel, companies should actively diversify their sources of supply. This
+means not only identifying additional suppliers in other countries but also
+ensuring that these alternatives do not rely on the same Chinese
+sub-suppliers. A superficial action at the tier-1 level may not eliminate the
+underlying risk if the deeper supply chain remains unchanged. A thorough
+risk assessment should therefore include sub-tier mapping and verification of
+the entire supply chain’s resilience.
+Ultimately, what is needed is a continuous monitoring and update of risk
+categories emanating from Chinese export controls. Identifying threats from
+changing geopolitical realities will distinguish successful companies from the
+rest to anticipate and prepare for imminent risks.
+Corporations Are at the Frontline of Chinese Usage of Export
+Controls
+24
+In light of China’s expanding use of export controls and sanctions, the
+European Union should adopt a clear and strategic approach to safeguard
+its economic and geopolitical interests. As global supply chains become
+more politicized, the EU cannot afford to remain reactive or fragmented in its
+response. We see two primary layers for the EU to respond to Chinese export
+controls – deterrence and cooperation.
+The EU has begun developing tools to counter economic pressure, such as
+the Anti-Coercion Instrument. However, export controls remain largely under
+national control and lack integration into a broader EU strategy. While
+avoiding an uncontrolled escalation is crucial – especially given the
+tit-for-tat dynamic between the U.S. and China – the EU must be ready to
+respond decisively to any expansion of Chinese restrictions and export
+controls. A firm, but measured approach is essential to deter future pressure.
+A key element of this strategy should be the identification of strategic
+chokepoints – areas where the EU holds significant leverage in global supply
+chains. These chokepoints should be selected carefully to maximize
+geopolitical impact while minimizing collateral damage to European
+industries and consumers. This requires a nuanced understanding of both the
+EU’s strengths and the vulnerabilities of its trading partners.
+Finally, the EU must communicate its actions with clarity and purpose. It
+should be made explicitly clear that any restrictive measures are direct
+responses to China’s efforts to build economic leverage and are intended to
+restore balance, not provoke confrontation. Transparent and principled
+communication will help maintain international support and reduce the risk of
+misinterpretation or escalation.
+While deterrence is important, it is equally important to engage China
+constructively on its use of export controls. A central priority should be to
+demand that China refrain from further expanding its controls. In parallel,
+the EU should seek assurances that existing export controls will not be used
+discriminatorily against European companies. This includes pushing for
+greater transparency in China’s export licensing process, such as regular
+reporting on the number and scope of licenses issued. Transparency would
+help reduce uncertainty for EU businesses and foster a more predictable
+trade environment.
+To further ease trade frictions, the EU should advocate for simplified
+licensing mechanisms for European customers. This could include one-time
+licenses – which would apply to a specific customer or product without
+repeated applications – or even general licenses that automatically cover all
+EU countries. These mechanisms would reduce administrative burdens on
+China’s side and signal goodwill in maintaining open trade channels.
+Finally, beyond reactive measures, the EU’s efforts to become less vulnerable
+will require the emergence of European mining champions –
+well-capitalized firms capable of investing internationally, building
+integrated supply chains, and driving innovation. Without such players,
+Europe will struggle to compete with state-backed enterprises from other
+regions and will remain dependent on external sources for critical input.
+Public Actors, Especially the EU, Need to Play a Supporting Role
+Annex: Industries Affected by Chinese Export Controls
+(only selected items)
+25
+Annex: Industries Affected by Chinese Export Controls
+(only selected items)
+26
+Get
+in
+touch.
+Turn insights into action:
+Contact us today and unlock the
+full potential of your business.
+info@sinolytics.de
+www.sinolytics.de
+Imprint:
+Sinolytics GmbH,
+Leipziger Platz 16,
+10117 Berlin
+HRB 199715 B
+VAT ID: DE317668739
+CEO: Björn Conrad
