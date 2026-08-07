@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Sinolytics — Ask</title>
+<title>Sinolytics — Chat</title>
 <style>
   :root {
     --ink: #141414;
@@ -10,128 +10,52 @@
     --red: #a4161a;
     --grey: #8a8a8a;
     --line: #e6e2df;
+    --web-bg: #fdf6f1;
+    --web-accent: #b8641a;
+    --rag-bg: #fdf1f1;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: var(--paper); color: var(--ink); font-family: "Helvetica Neue", Arial, sans-serif; }
+  .app { display: flex; flex-direction: column; height: 100vh; }
 
-  html, body {
-    height: 100%;
-    background: var(--paper);
-    color: var(--ink);
-    font-family: "Helvetica Neue", Arial, sans-serif;
-  }
-
-  .top {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 22px 32px;
-  }
-
-  .brand {
-    font-size: 13px;
-    font-weight: 800;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-  }
-
+  .top { display: flex; align-items: center; justify-content: space-between; padding: 16px 28px; border-bottom: 1px solid var(--line); flex-shrink: 0; }
+  .brand { font-size: 13px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; text-decoration: none; color: var(--ink); cursor: pointer; }
   .brand span { color: var(--red); }
+  .new-chat { font-size: 12px; color: var(--grey); border: 1px solid var(--line); border-radius: 20px; padding: 7px 14px; cursor: pointer; background: none; }
+  .new-chat:hover { border-color: var(--red); color: var(--red); }
 
-  .back {
-    font-size: 12.5px;
-    color: var(--grey);
-    text-decoration: none;
-    letter-spacing: 0.03em;
-  }
-  .back:hover { color: var(--ink); }
+  .thread { flex: 1; overflow-y: auto; padding: 28px 0 20px 0; }
+  .thread-inner { max-width: 680px; margin: 0 auto; padding: 0 24px; }
 
-  .center {
-    min-height: 100vh;
+  /* Centered empty state — shown before the first message, like a homepage */
+  .empty-state {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 24px;
+    height: calc(100vh - 220px);
+    text-align: center;
+    padding: 0 24px;
   }
-
-  .stage {
-    width: 100%;
-    max-width: 620px;
-  }
+  .empty-state.hidden { display: none; }
 
   .greeting {
-    text-align: center;
-    font-size: clamp(24px, 3.4vw, 32px);
+    font-size: clamp(22px, 3vw, 28px);
     font-weight: 600;
-    line-height: 1.3;
-    margin-bottom: 34px;
+    line-height: 1.35;
     color: #2a2a2a;
+    margin-bottom: 26px;
+    max-width: 520px;
   }
-
-  .greeting .accent {
-    color: var(--red);
-  }
-
-  .ask-box {
-    border: 1.5px solid var(--line);
-    border-radius: 14px;
-    padding: 6px 6px 6px 20px;
-    display: flex;
-    align-items: flex-end;
-    gap: 10px;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
-    background: #fff;
-  }
-
-  .ask-box:focus-within {
-    border-color: var(--red);
-    box-shadow: 0 0 0 3px rgba(164, 22, 26, 0.08);
-  }
-
-  textarea {
-    flex: 1;
-    border: none;
-    outline: none;
-    resize: none;
-    font-family: inherit;
-    font-size: 15.5px;
-    line-height: 1.6;
-    padding: 14px 0;
-    min-height: 26px;
-    max-height: 160px;
-    color: var(--ink);
-  }
-
-  textarea::placeholder { color: #b0b0b0; }
-
-  .send-btn {
-    background: var(--red);
-    border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    flex-shrink: 0;
-    margin-bottom: 4px;
-    transition: background 0.15s ease, transform 0.1s ease;
-  }
-  .send-btn:hover { background: #841216; }
-  .send-btn:disabled { background: #e6c9ca; cursor: default; }
-  .send-btn svg { width: 17px; height: 17px; stroke: #fff; }
+  .greeting .accent { color: var(--red); }
 
   .suggestions {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     justify-content: center;
-    margin-top: 22px;
+    max-width: 560px;
   }
-
   .chip {
     font-size: 13px;
     color: var(--grey);
@@ -144,180 +68,396 @@
   }
   .chip:hover { border-color: var(--red); color: var(--red); }
 
-  /* answer state */
-  .answer-wrap {
-    display: none;
-    margin-top: 30px;
-    border-left: 3px solid var(--red);
-    padding-left: 20px;
-  }
-  .answer-wrap.show { display: block; }
+  .msg { margin-bottom: 26px; }
+  .msg-user { display: flex; justify-content: flex-end; }
+  .msg-user .bubble { background: var(--ink); color: #fff; padding: 11px 16px; border-radius: 14px 14px 2px 14px; max-width: 75%; font-size: 14.5px; line-height: 1.5; white-space: pre-wrap; }
 
-  .answer-label {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--red);
-    font-weight: 700;
-    margin-bottom: 8px;
-  }
+  .msg-ai .label-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .source-tag { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 3px 9px; border-radius: 4px; }
+  .source-tag.web { background: var(--web-bg); color: var(--web-accent); border: 1px solid #eddccb; }
+  .source-tag.rag { background: var(--rag-bg); color: var(--red); border: 1px solid #f0d6d6; }
 
-  .answer-text {
-    font-size: 15.5px;
-    line-height: 1.75;
-    color: #2a2a2a;
-    white-space: pre-wrap;
-  }
+  .msg-ai .answer-block { border-left: 3px solid var(--line); padding-left: 16px; font-size: 14.5px; line-height: 1.7; color: #262626; }
+  .msg-ai .answer-block p { margin-bottom: 10px; }
+  .msg-ai .answer-block p:last-child { margin-bottom: 0; }
+  .msg-ai .answer-block strong { color: var(--ink); font-weight: 700; }
+  .msg-ai .answer-block .answer-list { margin: 4px 0 14px 0; padding-left: 20px; }
+  .msg-ai .answer-block .answer-list li { margin-bottom: 6px; }
+  .msg-ai .answer-block .answer-spacer { height: 4px; }
+  .msg-ai .answer-block.web-border { border-left-color: var(--web-accent); }
+  .msg-ai .answer-block.rag-border { border-left-color: var(--red); }
 
-  .answer-text.error {
-    color: var(--red);
-  }
+  /* One block per Tavily result — content and source/date are rendered
+     separately so a finding can never visually merge with the wrong source. */
+  .web-findings { margin-top: 2px; }
+  .web-finding { margin-bottom: 14px; }
+  .web-finding:last-child { margin-bottom: 0; }
+  .web-finding-content { font-size: 14.5px; line-height: 1.6; color: #262626; }
+  .web-finding-meta { font-size: 11.5px; color: var(--grey); margin-top: 4px; }
+  .web-finding-meta a { color: var(--web-accent); text-decoration: none; }
+  .web-finding-meta a:hover { text-decoration: underline; }
 
-  .answer-chart {
-    display: none;
-    max-width: 100%;
-    margin-top: 18px;
-    border-radius: 12px;
-    border: 1px solid var(--line);
-    box-shadow: 0 8px 24px rgba(20, 20, 20, 0.1);
-  }
-  .answer-chart.show {
-    display: block;
-  }
+  /* Visually separate block for internal-KB analysis surfaced alongside a
+     web search — only rendered when the backend actually sent internal_analysis. */
+  .internal-analysis-block { margin-top: 18px; padding: 14px 16px; border-radius: 10px; background: var(--rag-bg); border-left: 3px solid var(--red); }
+  .internal-analysis-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--red); font-weight: 700; margin-bottom: 8px; }
+  .internal-analysis-body { font-size: 14px; line-height: 1.65; color: #2a2a2a; }
+  .internal-analysis-body p { margin-bottom: 8px; }
+  .internal-analysis-body p:last-child { margin-bottom: 0; }
+  .internal-analysis-body strong { color: var(--ink); }
+  .internal-analysis-body .answer-list { margin: 4px 0 10px 0; padding-left: 18px; }
+  .internal-analysis-body .answer-list li { margin-bottom: 4px; }
 
-  .loading {
-    display: none;
-    align-items: center;
-    gap: 8px;
-    color: var(--grey);
-    font-size: 13.5px;
-    margin-top: 26px;
-    padding-left: 3px;
-  }
-  .loading.show { display: flex; }
+  /* Only rendered when the backend actually returns a non-empty expert_note —
+     never fabricated client-side, never shown for unrelated/low-relevance retrieval */
+  .expert-note { margin-top: 10px; font-size: 13.5px; line-height: 1.65; color: #4a4a4a; background: var(--rag-bg); border-radius: 8px; padding: 10px 14px; }
+  .expert-note b { color: var(--red); }
 
-  .dot {
-    width: 5px; height: 5px; border-radius: 50%;
-    background: var(--red);
-    animation: pulse 1.1s infinite ease-in-out;
-  }
+  .chart-img { margin-top: 10px; max-width: 100%; border-radius: 8px; border: 1px solid var(--line); display: block; }
+
+  .error-block { border-left: 3px solid #c0392b; padding-left: 16px; font-size: 14px; color: #c0392b; }
+
+  .thinking { display: flex; align-items: center; gap: 8px; color: var(--grey); font-size: 13.5px; padding-left: 3px; }
+  .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--red); animation: pulse 1.1s infinite ease-in-out; }
   .dot:nth-child(2) { animation-delay: 0.15s; }
   .dot:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes pulse { 0%, 80%, 100% { opacity: 0.25; transform: scale(0.85); } 40% { opacity: 1; transform: scale(1); } }
 
-  @keyframes pulse {
-    0%, 80%, 100% { opacity: 0.25; transform: scale(0.85); }
-    40% { opacity: 1; transform: scale(1); }
-  }
+  .composer { flex-shrink: 0; border-top: 1px solid var(--line); padding: 16px 24px 20px 24px; background: #fff; }
+  .composer-inner { max-width: 680px; margin: 0 auto; }
+  .ask-box { border: 1.5px solid var(--line); border-radius: 14px; padding: 6px 6px 6px 18px; display: flex; align-items: flex-end; gap: 10px; transition: border-color 0.15s ease, box-shadow 0.15s ease; }
+  .ask-box:focus-within { border-color: var(--red); box-shadow: 0 0 0 3px rgba(164, 22, 26, 0.08); }
+  textarea { flex: 1; border: none; outline: none; resize: none; font-family: inherit; font-size: 14.5px; line-height: 1.6; padding: 12px 0; min-height: 22px; max-height: 140px; color: var(--ink); }
+  textarea::placeholder { color: #b0b0b0; }
+  .send-btn { background: var(--red); border: none; width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; margin-bottom: 4px; }
+  .send-btn:hover { background: #841216; }
+  .send-btn:disabled { background: #e6c9ca; cursor: default; }
+  .send-btn svg { width: 15px; height: 15px; stroke: #fff; }
+  .hint { font-size: 11.5px; color: #b0b0b0; text-align: center; margin-top: 8px; }
 </style>
 </head>
 <body>
 
-<div class="top">
-  <div class="brand">Sino<span>lytics</span></div>
-  <a class="back" href="index.html">← Back</a>
-</div>
+<div class="app">
+  <div class="top">
+    <a class="brand" href="index.html">Sino<span>lytics</span></a>
+    <button class="new-chat" onclick="location.reload()">+ New chat</button>
+  </div>
 
-<div class="center">
-  <div class="stage">
-    <div class="greeting">What would you like to know about<br><span class="accent">China's policy landscape</span>?</div>
-
-    <div class="ask-box">
-      <textarea id="q" rows="1" placeholder="Ask about industrial policy, supply chains, regulation…"></textarea>
-      <button class="send-btn" id="askBtn">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M5 12h14M13 6l6 6-6 6"/>
-        </svg>
-      </button>
+  <div class="thread" id="thread">
+    <div class="thread-inner" id="threadInner">
+      <div class="empty-state" id="emptyState">
+        <div class="greeting">What would you like to know about<br><span class="accent">China's policy landscape</span>?</div>
+        <div class="suggestions">
+          <div class="chip" data-q="Why are Chinese AI models so much cheaper?">Why are Chinese AI models cheaper?</div>
+          <div class="chip" data-q="What are the key risks in China's battery supply chain?">Battery supply chain risks</div>
+          <div class="chip" data-q="How is China using export controls as a geopolitical tool?">China's export controls strategy</div>
+          <div class="chip" data-q="Show me a chart of the EV price trend over the past year">Show EV price trend chart</div>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <div class="suggestions">
-      <div class="chip" data-q="Why are Chinese AI models so much cheaper?">Why are Chinese AI models cheaper?</div>
-      <div class="chip" data-q="What are the key risks in China's battery supply chain?">Battery supply chain risks</div>
-      <div class="chip" data-q="How does China use dual-use export licenses as a geopolitical tool?">China's dual-use export controls</div>
-      <div class="chip" data-q="Show me a chart of the EV price trend over the past year">Show EV price trend chart</div>
-    </div>
-
-    <div class="loading" id="loading">
-      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-      <span>Thinking…</span>
-    </div>
-
-    <div class="answer-wrap" id="answerWrap">
-      <div class="answer-label">Answer</div>
-      <div class="answer-text" id="answerText"></div>
-      <img class="answer-chart" id="answerChart" alt="Generated chart">
+  <div class="composer">
+    <div class="composer-inner">
+      <div class="ask-box">
+        <textarea id="q" rows="1" placeholder="Ask a follow-up, or start a new topic…"></textarea>
+        <button class="send-btn" id="sendBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M13 6l6 6-6 6"/>
+          </svg>
+        </button>
+      </div>
+      <div class="hint">Answers may combine internal reports and live web results — sources are always labeled.</div>
     </div>
   </div>
 </div>
 
 <script>
-  const API_URL = 'http://127.0.0.1:8000/ask';
+  const API_URL = "http://127.0.0.1:8000/ask";
 
-  const btn = document.getElementById('askBtn');
+  const threadInner = document.getElementById('threadInner');
+  const thread = document.getElementById('thread');
+  const emptyState = document.getElementById('emptyState');
   const q = document.getElementById('q');
-  const loading = document.getElementById('loading');
-  const answerWrap = document.getElementById('answerWrap');
-  const answerText = document.getElementById('answerText');
-  const answerChart = document.getElementById('answerChart');
+  const sendBtn = document.getElementById('sendBtn');
+
+  // Full conversation history, sent to the backend on every request.
+  // The backend — not this file — decides whether history is actually
+  // relevant to the new question; we never force a connection here.
+  let conversationHistory = [];
+
+  // Lightweight markdown -> HTML for consulting-style formatting.
+  // Handles: **bold**, bullet lines starting with - or •, and simple line breaks.
+  // Not a full markdown parser — just enough for structured LLM output.
+  function renderMarkdown(text) {
+    if (!text) return '';
+
+    const lines = text.split('\n');
+    let html = '';
+    let inList = false;
+
+    for (let raw of lines) {
+      const line = raw.trim();
+
+      if (line.startsWith('- ') || line.startsWith('• ')) {
+        if (!inList) { html += '<ul class="answer-list">'; inList = true; }
+        html += `<li>${inlineFormat(line.slice(2))}</li>`;
+        continue;
+      }
+
+      if (inList) { html += '</ul>'; inList = false; }
+
+      if (line.length === 0) {
+        html += '<div class="answer-spacer"></div>';
+      } else {
+        html += `<p>${inlineFormat(line)}</p>`;
+      }
+    }
+    if (inList) html += '</ul>';
+    return html;
+  }
+
+  function inlineFormat(str) {
+    // Escape basic HTML first to avoid injection, then apply bold.
+    const escaped = str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+    return escaped.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  }
+
+  function scrollToBottom() {
+    thread.scrollTop = thread.scrollHeight;
+  }
+
+  function renderUserMessage(text) {
+    emptyState.classList.add('hidden');
+    const div = document.createElement('div');
+    div.className = 'msg msg-user';
+    div.innerHTML = `<div class="bubble"></div>`;
+    div.querySelector('.bubble').textContent = text;
+    threadInner.appendChild(div);
+    scrollToBottom();
+  }
+
+  let thinkingInterval = null;
+
+  function renderThinking() {
+    const div = document.createElement('div');
+    div.className = 'msg msg-ai';
+    div.id = 'thinkingMsg';
+    div.innerHTML = `
+      <div class="thinking">
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+        <span id="thinkingText">Reading your question…</span>
+      </div>`;
+    threadInner.appendChild(div);
+    scrollToBottom();
+
+    // Cycles through plausible status phrases purely for perceived responsiveness —
+    // this does NOT reflect real backend progress unless wired to actual streaming.
+    const phrases = [
+      'Reading your question…',
+      'Searching internal reports…',
+      'Checking relevance of sources…',
+      'Drafting a structured answer…'
+    ];
+    let i = 0;
+    thinkingInterval = setInterval(() => {
+      i = (i + 1) % phrases.length;
+      const el = document.getElementById('thinkingText');
+      if (el) el.textContent = phrases[i];
+    }, 1800);
+  }
+
+  function removeThinking() {
+    if (thinkingInterval) { clearInterval(thinkingInterval); thinkingInterval = null; }
+    const el = document.getElementById('thinkingMsg');
+    if (el) el.remove();
+  }
+
+  // Renders one AI turn. Every piece here is conditional on what the
+  // backend actually sent — nothing is fabricated client-side:
+  // - source_type controls the tag + accent color
+  // - web_findings, when present, is rendered as one block per source
+  //   (content + source name/date/link) instead of free-text prose, so a
+  //   point can never visually detach from its own citation
+  // - internal_analysis is its own separate block, only rendered when the
+  //   backend judged the internal knowledge base genuinely relevant —
+  //   never shown just because a web search happened to run
+  // - expert_note (the plain-internal-search path) only renders if the
+  //   backend included a non-empty string
+  // - chart_image only renders if present
+  function renderAiMessage(data) {
+    const div = document.createElement('div');
+    div.className = 'msg msg-ai';
+
+    const isWeb = data.source_type === 'web';
+    const tagClass = isWeb ? 'web' : 'rag';
+    const tagText = isWeb ? 'Live web search' : 'Internal knowledge';
+    const borderClass = isWeb ? 'web-border' : 'rag-border';
+
+    let html = `
+      <div class="label-row"><span class="source-tag ${tagClass}">${tagText}</span></div>
+      <div class="answer-block ${borderClass}"></div>
+    `;
+    div.innerHTML = html;
+
+    const answerBlock = div.querySelector('.answer-block');
+
+    if (isWeb && data.web_findings && data.web_findings.length > 0) {
+      if (data.answer) {
+        const lead = document.createElement('p');
+        lead.textContent = data.answer;
+        answerBlock.appendChild(lead);
+      }
+
+      const list = document.createElement('div');
+      list.className = 'web-findings';
+      data.web_findings.forEach((finding) => {
+        const item = document.createElement('div');
+        item.className = 'web-finding';
+
+        const content = document.createElement('div');
+        content.className = 'web-finding-content';
+        content.textContent = finding.content;
+        item.appendChild(content);
+
+        const meta = document.createElement('div');
+        meta.className = 'web-finding-meta';
+        // Never fabricate a date — only show one if the backend actually sent one.
+        const label = finding.date
+          ? `${finding.source} · ${finding.date}`
+          : `Source: ${finding.source}`;
+        if (finding.url) {
+          const link = document.createElement('a');
+          link.href = finding.url;
+          link.target = '_blank';
+          link.rel = 'noopener';
+          link.textContent = label;
+          meta.appendChild(link);
+        } else {
+          meta.textContent = label;
+        }
+        item.appendChild(meta);
+
+        list.appendChild(item);
+      });
+      answerBlock.appendChild(list);
+    } else {
+      answerBlock.innerHTML = renderMarkdown(data.answer || '');
+    }
+
+    if (isWeb) {
+      const note = document.createElement('div');
+      note.className = 'expert-note';
+      note.innerHTML = '<b>Note:</b> preliminary signal from a live web search — pending expert review, not a finalized Sinolytics assessment.';
+      div.appendChild(note);
+    } else if (data.expert_note && data.expert_note.trim().length > 0) {
+      // Only shown when the backend judged the retrieved context
+      // genuinely relevant enough to support a summarized takeaway.
+      const note = document.createElement('div');
+      note.className = 'expert-note';
+      note.innerHTML = `<b>Based on our prior analysis:</b> ${data.expert_note}`;
+      div.appendChild(note);
+    }
+
+    if (data.internal_analysis) {
+      const block = document.createElement('div');
+      block.className = 'internal-analysis-block';
+
+      const label = document.createElement('div');
+      label.className = 'internal-analysis-label';
+      label.textContent = "Sinolytics' prior analysis on this topic";
+      block.appendChild(label);
+
+      const body = document.createElement('div');
+      body.className = 'internal-analysis-body';
+      body.innerHTML = renderMarkdown(data.internal_analysis);
+      block.appendChild(body);
+
+      div.appendChild(block);
+    }
+
+    if (data.chart_image) {
+      const img = document.createElement('img');
+      img.className = 'chart-img';
+      img.src = `data:image/png;base64,${data.chart_image}`;
+      div.appendChild(img);
+    }
+
+    threadInner.appendChild(div);
+    scrollToBottom();
+  }
+
+  function renderError(message) {
+    const div = document.createElement('div');
+    div.className = 'msg msg-ai';
+    div.innerHTML = `<div class="answer-block error-block"></div>`;
+    div.querySelector('.error-block').textContent = message;
+    threadInner.appendChild(div);
+    scrollToBottom();
+  }
 
   async function ask(question) {
-    if (!question || !question.trim()) return;
-    answerWrap.classList.remove('show');
-    answerChart.classList.remove('show');
-    answerChart.removeAttribute('src');
-    loading.classList.add('show');
-    btn.disabled = true;
+    if (!question.trim()) return;
+
+    sendBtn.disabled = true;
+    renderUserMessage(question);
+    renderThinking();
 
     try {
       const res = await fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: question.trim() }),
+        body: JSON.stringify({
+          question: question,
+          conversation_history: conversationHistory
+        })
       });
 
-      if (!res.ok) {
-        const errBody = await res.json().catch(() => null);
-        throw new Error(errBody?.detail || `Request failed (${res.status})`);
-      }
-
+      if (!res.ok) throw new Error(`Server returned ${res.status}`);
       const data = await res.json();
-      answerText.textContent = data.answer;
-      answerText.classList.remove('error');
 
-      if (data.chart_image) {
-        answerChart.src = data.chart_image;
-        answerChart.classList.add('show');
-      }
+      removeThinking();
+      renderAiMessage(data);
+
+      // Append this turn to history for future requests.
+      conversationHistory.push({ role: 'user', content: question });
+      conversationHistory.push({ role: 'assistant', content: data.answer || '' });
+
     } catch (err) {
-      answerText.textContent = `Something went wrong: ${err.message}`;
-      answerText.classList.add('error');
+      removeThinking();
+      renderError(`Something went wrong: ${err.message}`);
     } finally {
-      loading.classList.remove('show');
-      answerWrap.classList.add('show');
-      btn.disabled = false;
+      sendBtn.disabled = false;
     }
   }
 
-  btn.addEventListener('click', () => ask(q.value));
+  sendBtn.addEventListener('click', () => {
+    const text = q.value;
+    q.value = '';
+    q.style.height = 'auto';
+    ask(text);
+  });
 
   q.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      ask(q.value);
+      sendBtn.click();
     }
+  });
+
+  q.addEventListener('input', () => {
+    q.style.height = 'auto';
+    q.style.height = Math.min(q.scrollHeight, 140) + 'px';
   });
 
   document.querySelectorAll('.chip').forEach(chip => {
     chip.addEventListener('click', () => {
-      q.value = chip.dataset.q;
-      ask(q.value);
+      ask(chip.dataset.q);
     });
-  });
-
-  // auto-grow textarea
-  q.addEventListener('input', () => {
-    q.style.height = 'auto';
-    q.style.height = Math.min(q.scrollHeight, 160) + 'px';
   });
 </script>
 

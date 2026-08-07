@@ -72,36 +72,51 @@ def hybrid_search(question, match_count=MATCH_COUNT):
     return list(candidates.values())
 
 
-def score_relevance(question, content):
+def score_relevance_batch(question, contents):
+    """Score every candidate's relevance to the question in a single LLM call
+    (one prompt listing all candidates, one response with all scores) instead
+    of one call per candidate — this is the expensive part of rerank, so
+    batching it is what actually cuts the call count down."""
+    if not contents:
+        return []
+
+    numbered = "\n\n".join(f"[{i}] {content}" for i, content in enumerate(contents))
+    prompt = (
+        "Rate how relevant each numbered passage below is to the question, on "
+        "a scale from 0 (not relevant at all) to 10 (highly relevant).\n\n"
+        f"Question: {question}\n\n"
+        f"Passages:\n{numbered}\n\n"
+        "Respond with exactly one line per passage, in the format "
+        "'[index]: score', and nothing else. Example:\n[0]: 7\n[1]: 2"
+    )
     response = openai_client.chat.completions.create(
         model=RERANK_MODEL,
-        messages=[
-            {
-                "role": "user",
-                "content": (
-                    "Rate how relevant the following passage is to the question, "
-                    "on a scale from 0 (not relevant at all) to 10 (highly relevant). "
-                    "Respond with only the number, no other text.\n\n"
-                    f"Question: {question}\n\n"
-                    f"Passage:\n{content}\n\n"
-                    "Score:"
-                ),
-            }
-        ],
+        messages=[{"role": "user", "content": prompt}],
     )
     text = response.choices[0].message.content.strip()
-    match = re.search(r"\d+(\.\d+)?", text)
-    if not match:
-        return 0.0
-    return max(0.0, min(10.0, float(match.group())))
+
+    scores = {}
+    for line in text.splitlines():
+        match = re.match(r"\[?(\d+)\]?\s*[:.\-]\s*(\d+(\.\d+)?)", line.strip())
+        if match:
+            index = int(match.group(1))
+            scores[index] = max(0.0, min(10.0, float(match.group(2))))
+
+    # Any passage the model didn't return a line for is treated as 0 —
+    # missing a score is not the same as being relevant.
+    return [scores.get(i, 0.0) for i in range(len(contents))]
 
 
 def rerank(question, candidates, top_n=3):
-    """Score each candidate's relevance to the question with one LLM call per
-    candidate, then return the top_n highest-scoring ones."""
+    """Score all candidates' relevance to the question in one batched LLM
+    call, then return the top_n highest-scoring ones."""
+    if not candidates:
+        return []
+
+    scores = score_relevance_batch(question, [c["content"] for c in candidates])
     scored = [
-        {**candidate, "relevance_score": score_relevance(question, candidate["content"])}
-        for candidate in candidates
+        {**candidate, "relevance_score": score}
+        for candidate, score in zip(candidates, scores)
     ]
     scored.sort(key=lambda c: c["relevance_score"], reverse=True)
     return scored[:top_n]
