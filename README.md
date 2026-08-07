@@ -4,7 +4,7 @@ A LangChain tool-calling agent over China policy/tech briefings — hybrid (vect
 
 ## Background
 
-This project was built as a technical proof-of-concept for the **Working Student – Data and AI Application** role at Sinolytics. It demonstrates, end to end, how a small but production-shaped RAG pipeline, an LLM agent with tool use, and a lightweight data visualization workflow can be built with a modern Python/JS stack.
+This project was built as for the **Working Student – Data and AI Application** role at Sinolytics. It demonstrates, end to end, how a small but production-shaped RAG pipeline, an LLM agent with tool use, and a lightweight data visualization workflow can be built with a modern Python/JS stack.
 
 ## Tech Stack
 
