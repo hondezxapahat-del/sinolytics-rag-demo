@@ -64,7 +64,7 @@ This positioning risk shows up concretely as the following unresolved gaps:
 
 ### Quantifiable Answer-Quality Verification
 
-6. The product must have a repeatable evaluation method covering every topic currently in the corpus (export controls, NEV price war) — not a one-off manual judgment.
+6. The product must have a repeatable evaluation method covering every topic currently in the corpus (Chinese AI model pricing/market dynamics, China's desktop AI office-agent market, China's industrial robot installations, export controls) — not a one-off manual judgment.
 7. The evaluation must be able to compare the product's answers against "a general-purpose LLM baseline without retrieval augmentation," in order to demonstrate the product outperforms that baseline in this vertical (the specific evaluation methodology is left to a later technical document).
 8. There must be a clear, explainable bar for what counts as an acceptable answer, not just an abstract score.
 
@@ -95,7 +95,7 @@ This positioning risk shows up concretely as the following unresolved gaps:
 2. **Disagreement surfaced**: In sampled review, cases where internal and external conclusions diverge are faithfully presented as a disagreement, not silently reconciled into a single conclusion.
 3. **Predictions are human-confirmed**: Every trend prediction shown to users can be traced back to an explicit human confirmation record; no unconfirmed prediction is ever shown directly.
 4. **Predictions are distinguishable**: An uninformed reader (e.g. an interviewer) can, from the interface alone, correctly tell "a human-confirmed prediction" apart from "a directly retrieved answer."
-5. **Evaluation coverage**: An evaluation set has been built covering every topic currently in the corpus (export controls, NEV price war), and comparison results between the product and "a non-retrieval general-purpose LLM baseline" have been produced.
+5. **Evaluation coverage**: An evaluation set has been built covering every topic currently in the corpus (Chinese AI model pricing/market dynamics, China's desktop AI office-agent market, China's industrial robot installations, export controls), and comparison results between the product and "a non-retrieval general-purpose LLM baseline" have been produced.
 6. **Quality exceeds baseline**: Evaluation results show the product's answer quality is at or above baseline on most evaluated questions (the exact numeric target is TBD pending the first evaluation run — see Open Questions).
 7. **Runtime traceability**: For any failed or poor-quality request, a developer can, after the fact, trace the issue to a specific stage — retrieval, reranking, generation, or prediction confirmation.
 8. **Cost visibility**: Developers can retrieve call-cost data for any time window; there is no scenario where the cost incurred is simply unknown.
