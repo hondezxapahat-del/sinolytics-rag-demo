@@ -187,9 +187,27 @@
     .right { height: 46vh; border-left: none; border-top: 1px solid var(--line); }
     .left { padding: 10vw 7vw; }
   }
+
+  .account-bar {
+    position: fixed;
+    top: 20px;
+    right: 24px;
+    z-index: 10;
+    font-size: 12px;
+    color: var(--grey);
+    background: none;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 7px 16px;
+    cursor: pointer;
+    display: none;
+  }
+  .account-bar:hover { border-color: var(--red); color: var(--red); }
 </style>
 </head>
 <body>
+
+<button class="account-bar" id="accountBar"></button>
 
 <div class="stage">
   <div class="left">
@@ -262,6 +280,24 @@
     </svg>
   </div>
 </div>
+
+<script>
+  // Shows "Log out" when a session exists (localStorage — same token
+  // ask.html/review.html read), "Sign in" otherwise. Logging out clears the
+  // token and sends the user straight to the login page.
+  const accountBar = document.getElementById('accountBar');
+  const loggedIn = !!localStorage.getItem('access_token');
+
+  accountBar.textContent = loggedIn ? 'Log out' : 'Sign in';
+  accountBar.style.display = 'block';
+
+  accountBar.addEventListener('click', () => {
+    if (loggedIn) {
+      localStorage.removeItem('access_token');
+    }
+    window.location.href = 'login.html';
+  });
+</script>
 
 </body>
 </html>

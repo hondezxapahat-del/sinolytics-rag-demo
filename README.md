@@ -162,7 +162,7 @@ Thin FastAPI wrapper: `POST /ask` takes `{question, conversation_history, match_
 1. Clone the repository and `cd` into it.
 2. Install dependencies:
    ```bash
-   pip install fastapi uvicorn openai supabase python-dotenv pandas matplotlib langchain langchain-openai langchain-tavily
+   pip install fastapi uvicorn openai supabase python-dotenv pandas matplotlib langchain langchain-openai langchain-tavily langgraph-checkpoint-postgres "psycopg[binary,pool]" bcrypt pyjwt
    ```
 3. Create a `.env` file with:
    ```
@@ -170,21 +170,27 @@ Thin FastAPI wrapper: `POST /ask` takes `{question, conversation_history, match_
    SUPABASE_URL=...
    SUPABASE_SERVICE_ROLE_KEY=...
    TAVILY_API_KEY=...
+   SUPABASE_DB_URL=...
+   LANGCHAIN_TRACING_V2=...
+   LANGCHAIN_API_KEY=...
+   LANGCHAIN_PROJECT=...
    ```
-   `TAVILY_API_KEY` is optional — without it, the agent still works with the search/chart tools, and the web search tool activates automatically once the key is added (no code changes needed).
-4. In the Supabase SQL editor, run `match_documents.sql` and `keyword_search.sql` once to create the retrieval functions (and the full-text index).
-5. Embed and store the source documents:
+   `TAVILY_API_KEY` is optional — without it, the agent still works with the search/chart tools, and the web search tool activates automatically once the key is added (no code changes needed). `SUPABASE_DB_URL` is a direct Postgres connection string from Supabase's Database settings (a different credential from `SUPABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY`, which are REST API credentials) — it's optional too: without it, conversations just aren't remembered across requests (see `docs/TechSpec_v1.1.md` §4.5). The three `LANGCHAIN_*` variables are also optional — set them to get full call-trace and cost observability via [LangSmith](https://smith.langchain.com) (see §4.4); leave any of these unset and that piece simply stays off, with no other behavior change.
+4. In the Supabase SQL editor, run `match_documents.sql`, `keyword_search.sql`, `trend_predictions.sql`, and `auth_and_threads.sql` once to create the retrieval functions, the trend-prediction queue, and the login/conversation-list tables.
+5. If `SUPABASE_DB_URL` is set, also run `python setup_checkpointer.py` once to create the tables conversation-history persistence needs.
+6. Embed and store the source documents:
    ```bash
    python embed_and_store.py
    ```
    To add a new document later without re-embedding everything, pass its path directly: `python embed_and_store.py docs/new_file.txt`.
-6. Start the API:
+7. Start the API:
    ```bash
    uvicorn api:app --reload
    ```
-7. Open `index.html` in a browser, click through to the ask page, and try each agent path: a factual question, a trend/comparison question (triggers the chart), a timeliness question like "what's the latest news on X" (triggers web search + internal cross-check), and a plain greeting.
-8. (Optional) Test retrieval directly from the CLI: `python search.py "your question"`.
-9. (Optional) Regenerate the price trend chart standalone: `python plot_price_trend.py`.
+8. Open `index.html` in a browser, click through to the ask page, and try each agent path: a factual question, a trend/comparison question (triggers the chart), a timeliness question like "what's the latest news on X" (triggers web search + internal cross-check), and a plain greeting.
+9. (Optional) Test retrieval directly from the CLI: `python search.py "your question"`.
+10. (Optional) Regenerate the price trend chart standalone: `python plot_price_trend.py`.
+11. (Optional) Run the v1.1 evaluation harness: `python evaluate.py` (see `docs/TechSpec_v1.1.md` §4.3).
 
 ## Future Directions
 

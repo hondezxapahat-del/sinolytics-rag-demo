@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Prediction Review — internal</title>
+<style>
+  :root { --ink: #141414; --paper: #ffffff; --red: #a4161a; --grey: #8a8a8a; --line: #e6e2df; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--paper); color: var(--ink); font-family: "Helvetica Neue", Arial, sans-serif; padding: 32px 24px 80px; }
+  .wrap { max-width: 720px; margin: 0 auto; }
+  h1 { font-size: 20px; margin-bottom: 4px; }
+  .sub { font-size: 13px; color: var(--grey); margin-bottom: 28px; }
+  .empty { color: var(--grey); font-size: 14px; padding: 40px 0; text-align: center; }
+  .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; margin-bottom: 16px; }
+  .topic { font-weight: 700; font-size: 14.5px; margin-bottom: 4px; }
+  .meta { font-size: 11.5px; color: var(--grey); margin-bottom: 12px; }
+  .draft { font-size: 14px; line-height: 1.6; color: #262626; white-space: pre-wrap; margin-bottom: 14px; }
+  .note-input { width: 100%; border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; font-size: 13px; font-family: inherit; margin-bottom: 10px; resize: vertical; min-height: 40px; }
+  .actions { display: flex; gap: 10px; }
+  button { font-size: 13px; font-weight: 600; border-radius: 8px; padding: 8px 16px; cursor: pointer; border: 1px solid var(--line); background: #fff; }
+  .approve { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .approve:hover { opacity: 0.85; }
+  .reject { color: var(--red); border-color: var(--red); }
+  .reject:hover { background: #fdf1f1; }
+  button:disabled { opacity: 0.5; cursor: default; }
+  .refresh { font-size: 12px; color: var(--grey); border: 1px solid var(--line); border-radius: 20px; padding: 6px 14px; background: none; cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Prediction review queue</h1>
+  <div class="sub">Internal tool — approve or reject drafts before they can ever be shown to a user (docs/TechSpec_v1.1.md §4.2).</div>
+  <button class="refresh" onclick="load()">↻ Refresh</button>
+  <div id="list" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+  const API_BASE = "http://127.0.0.1:8000";
+  const list = document.getElementById('list');
+
+  async function load() {
+    list.innerHTML = '<div class="empty">Loading…</div>';
+    try {
+      const res = await fetch(`${API_BASE}/predictions`);
+      if (!res.ok) throw new Error(`Server returned ${res.status}`);
+      const items = await res.json();
+      render(items);
+    } catch (err) {
+      list.innerHTML = `<div class="empty">Couldn't load the queue: ${err.message}</div>`;
+    }
+  }
+
+  function render(items) {
+    if (items.length === 0) {
+      list.innerHTML = '<div class="empty">Nothing pending review.</div>';
+      return;
+    }
+    list.innerHTML = '';
+    items.forEach((item) => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="topic"></div>
+        <div class="meta"></div>
+        <div class="draft"></div>
+        <textarea class="note-input" placeholder="Optional reviewer note…"></textarea>
+        <div class="actions">
+          <button class="approve">Approve</button>
+          <button class="reject">Reject</button>
+        </div>
+      `;
+      card.querySelector('.topic').textContent = item.topic;
+      card.querySelector('.meta').textContent = `Submitted ${item.created_at}`;
+      card.querySelector('.draft').textContent = item.draft_content;
+
+      const noteInput = card.querySelector('.note-input');
+      const approveBtn = card.querySelector('.approve');
+      const rejectBtn = card.querySelector('.reject');
+
+      const submit = async (approve) => {
+        approveBtn.disabled = true;
+        rejectBtn.disabled = true;
+        try {
+          const res = await fetch(`${API_BASE}/predictions/${item.id}/review`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ approve, reviewer_note: noteInput.value || null }),
+          });
+          if (!res.ok) throw new Error(`Server returned ${res.status}`);
+          card.remove();
+          if (list.children.length === 0) {
+            list.innerHTML = '<div class="empty">Nothing pending review.</div>';
+          }
+        } catch (err) {
+          alert(`Couldn't submit review: ${err.message}`);
+          approveBtn.disabled = false;
+          rejectBtn.disabled = false;
+        }
+      };
+
+      approveBtn.addEventListener('click', () => submit(true));
+      rejectBtn.addEventListener('click', () => submit(false));
+
+      list.appendChild(card);
+    });
+  }
+
+  load();
+</script>
+</body>
+</html>

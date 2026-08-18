@@ -16,7 +16,27 @@
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; background: var(--paper); color: var(--ink); font-family: "Helvetica Neue", Arial, sans-serif; }
-  .app { display: flex; flex-direction: column; height: 100vh; }
+  .layout { display: flex; height: 100vh; }
+  .app { display: flex; flex-direction: column; height: 100vh; flex: 1; min-width: 0; }
+
+  /* Conversation-history sidebar (PRD_v1.1.md Goal 5/8) */
+  .sidebar { width: 260px; flex-shrink: 0; border-right: 1px solid var(--line); display: flex; flex-direction: column; height: 100vh; }
+  .sidebar-top { padding: 18px 20px 14px 20px; }
+  .sidebar-new-chat { margin: 0 16px 12px 16px; font-size: 13px; color: var(--ink); border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; cursor: pointer; background: none; text-align: left; }
+  .sidebar-new-chat:hover { border-color: var(--red); color: var(--red); }
+  .thread-list { flex: 1; overflow-y: auto; padding: 0 10px; }
+  .thread-item { display: flex; align-items: center; gap: 6px; padding: 9px 10px; border-radius: 8px; cursor: pointer; margin-bottom: 2px; }
+  .thread-item:hover { background: #f7f5f3; }
+  .thread-item.active { background: var(--rag-bg); }
+  .thread-item-title { flex: 1; font-size: 13px; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .thread-item.active .thread-item-title { color: var(--red); font-weight: 600; }
+  .thread-item-delete { flex-shrink: 0; font-size: 15px; color: var(--grey); background: none; border: none; cursor: pointer; padding: 2px 5px; border-radius: 4px; visibility: hidden; }
+  .thread-item:hover .thread-item-delete { visibility: visible; }
+  .thread-item-delete:hover { color: var(--red); background: #f0d6d6; }
+  .thread-empty { font-size: 12.5px; color: var(--grey); padding: 8px 10px; }
+  .sidebar-bottom { padding: 12px 16px 16px 16px; border-top: 1px solid var(--line); }
+  .logout-btn { font-size: 12px; color: var(--grey); background: none; border: none; cursor: pointer; padding: 0; }
+  .logout-btn:hover { color: var(--red); }
 
   .top { display: flex; align-items: center; justify-content: space-between; padding: 16px 28px; border-bottom: 1px solid var(--line); flex-shrink: 0; }
   .brand { font-size: 13px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; text-decoration: none; color: var(--ink); cursor: pointer; }
@@ -76,6 +96,7 @@
   .source-tag { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 3px 9px; border-radius: 4px; }
   .source-tag.web { background: var(--web-bg); color: var(--web-accent); border: 1px solid #eddccb; }
   .source-tag.rag { background: var(--rag-bg); color: var(--red); border: 1px solid #f0d6d6; }
+  .source-tag.prediction { background: #f3f0fb; color: #5b3fa0; border: 1px solid #ded4f2; }
 
   .msg-ai .answer-block { border-left: 3px solid var(--line); padding-left: 16px; font-size: 14.5px; line-height: 1.7; color: #262626; }
   .msg-ai .answer-block p { margin-bottom: 10px; }
@@ -86,6 +107,17 @@
   .msg-ai .answer-block .answer-spacer { height: 4px; }
   .msg-ai .answer-block.web-border { border-left-color: var(--web-accent); }
   .msg-ai .answer-block.rag-border { border-left-color: var(--red); }
+  .msg-ai .answer-block.prediction-border { border-left-color: #5b3fa0; }
+
+  /* Human-confirmed prediction — visually distinct from a plain retrieved
+     answer so a reader never mistakes one for the other (docs/TechSpec_v1.1.md §4.2). */
+  .prediction-block { margin-top: 4px; padding: 14px 16px; border-radius: 10px; background: #f3f0fb; border-left: 3px solid #5b3fa0; }
+  .prediction-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #5b3fa0; font-weight: 700; margin-bottom: 8px; }
+  .prediction-body { font-size: 14.5px; line-height: 1.65; color: #2a2a2a; white-space: pre-wrap; }
+
+  .prediction-pending-block { margin-top: 18px; padding: 14px 16px; border-radius: 10px; background: var(--rag-bg); border-left: 3px solid var(--red); }
+  .prediction-pending-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--red); font-weight: 700; margin-bottom: 8px; }
+  .prediction-pending-body { font-size: 14px; line-height: 1.65; color: #2a2a2a; }
 
   /* One block per Tavily result — content and source/date are rendered
      separately so a finding can never visually merge with the wrong source. */
@@ -138,10 +170,22 @@
 </head>
 <body>
 
+<div class="layout">
+  <div class="sidebar">
+    <div class="sidebar-top">
+      <a class="brand" href="index.html">Sino<span>lytics</span></a>
+    </div>
+    <button class="sidebar-new-chat" onclick="startNewChat()">+ New chat</button>
+    <div class="thread-list" id="threadList"></div>
+    <div class="sidebar-bottom">
+      <button class="logout-btn" onclick="logout()">Log out</button>
+    </div>
+  </div>
+
 <div class="app">
   <div class="top">
     <a class="brand" href="index.html">Sino<span>lytics</span></a>
-    <button class="new-chat" onclick="location.reload()">+ New chat</button>
+    <button class="new-chat" onclick="startNewChat()">+ New chat</button>
   </div>
 
   <div class="thread" id="thread">
@@ -172,20 +216,140 @@
     </div>
   </div>
 </div>
+</div>
 
 <script>
-  const API_URL = "http://127.0.0.1:8000/ask";
+  const API_BASE = "http://127.0.0.1:8000";
+  const API_URL = `${API_BASE}/ask`;
+
+  // --- Auth (PRD_v1.1.md Goal 8) — lightweight username+password, just
+  // enough to own a conversation history. No refresh-token flow: the token
+  // is long-lived (30 days server-side, see auth.py) and re-login is the
+  // only recovery if it expires or is revoked.
+  const authToken = localStorage.getItem('access_token');
+  if (!authToken) {
+    window.location.href = 'login.html';
+  }
+
+  function logout() {
+    localStorage.removeItem('access_token');
+    window.location.href = 'login.html';
+  }
+
+  async function authFetch(path, options = {}) {
+    const res = await fetch(`${API_BASE}${path}`, {
+      ...options,
+      headers: { ...(options.headers || {}), 'Authorization': `Bearer ${authToken}` },
+    });
+    if (res.status === 401) {
+      logout();
+      throw new Error('Session expired');
+    }
+    return res;
+  }
 
   const threadInner = document.getElementById('threadInner');
   const thread = document.getElementById('thread');
   const emptyState = document.getElementById('emptyState');
   const q = document.getElementById('q');
   const sendBtn = document.getElementById('sendBtn');
+  const threadList = document.getElementById('threadList');
 
-  // Full conversation history, sent to the backend on every request.
-  // The backend — not this file — decides whether history is actually
-  // relevant to the new question; we never force a connection here.
-  let conversationHistory = [];
+  // Conversation identity now lives server-side (LangGraph checkpointer —
+  // see docs/TechSpec_v1.1.md §4.5), so this file only needs to remember a
+  // session_id, not the message history itself. Reading/writing it in the
+  // URL (not just localStorage) means the URL itself is a bookmarkable,
+  // copy-to-another-device link back into the same conversation — though
+  // now that /ask checks ownership, only your own account can actually use it.
+  let sessionId = new URLSearchParams(window.location.search).get('session_id');
+
+  function startNewChat() {
+    const url = new URL(window.location.href);
+    url.searchParams.delete('session_id');
+    window.location.href = url.toString();
+  }
+
+  // --- Sidebar: conversation list (PRD_v1.1.md Goal 5/8) ---
+
+  async function loadThreadList() {
+    try {
+      const res = await authFetch('/conversations');
+      if (!res.ok) throw new Error(`Server returned ${res.status}`);
+      renderThreadList(await res.json());
+    } catch (err) {
+      threadList.innerHTML = `<div class="thread-empty">Couldn't load history.</div>`;
+    }
+  }
+
+  function renderThreadList(items) {
+    if (items.length === 0) {
+      threadList.innerHTML = '<div class="thread-empty">No conversations yet.</div>';
+      return;
+    }
+    threadList.innerHTML = '';
+    items.forEach((item) => {
+      const row = document.createElement('div');
+      row.className = 'thread-item' + (item.session_id === sessionId ? ' active' : '');
+      row.innerHTML = `
+        <span class="thread-item-title"></span>
+        <button class="thread-item-delete" title="Delete">×</button>
+      `;
+      const titleEl = row.querySelector('.thread-item-title');
+      titleEl.textContent = item.title;
+      titleEl.addEventListener('click', () => openThread(item.session_id));
+
+      row.querySelector('.thread-item-delete').addEventListener('click', async (e) => {
+        e.stopPropagation();
+        if (!confirm(`Delete "${item.title}"?`)) return;
+        await authFetch(`/conversations/${item.session_id}`, { method: 'DELETE' });
+        if (item.session_id === sessionId) {
+          startNewChat();
+          return;
+        }
+        loadThreadList();
+      });
+
+      threadList.appendChild(row);
+    });
+  }
+
+  // Fetches and renders one thread's history. Only ever shows plain Q&A
+  // text (renderHistoricalAiMessage) — the rich per-turn metadata (sources,
+  // web findings, chart images, prediction labels) was never part of the
+  // persisted checkpoint state, so a reloaded thread can't reproduce it.
+  // This is a known, accepted limitation (docs/TechSpec_v1.1.md §4.5), not a bug.
+  async function loadHistoryIntoView(id) {
+    threadInner.innerHTML = '';
+    emptyState.classList.add('hidden');
+    try {
+      const res = await authFetch(`/conversations/${id}/messages`);
+      if (!res.ok) throw new Error(`Server returned ${res.status}`);
+      const messages = await res.json();
+      if (messages.length === 0) {
+        emptyState.classList.remove('hidden');
+        return;
+      }
+      messages.forEach((m) => {
+        if (m.role === 'user') {
+          renderUserMessage(m.content);
+        } else {
+          renderHistoricalAiMessage(m.content);
+        }
+      });
+    } catch (err) {
+      renderError(`Couldn't load this conversation: ${err.message}`);
+    }
+  }
+
+  async function openThread(id) {
+    if (id === sessionId) return;
+    sessionId = id;
+    const url = new URL(window.location.href);
+    url.searchParams.set('session_id', sessionId);
+    history.replaceState(null, '', url);
+    await loadHistoryIntoView(id);
+    loadThreadList();
+  }
 
   // Lightweight markdown -> HTML for consulting-style formatting.
   // Handles: **bold**, bullet lines starting with - or •, and simple line breaks.
@@ -294,9 +458,10 @@
     div.className = 'msg msg-ai';
 
     const isWeb = data.source_type === 'web';
-    const tagClass = isWeb ? 'web' : 'rag';
-    const tagText = isWeb ? 'Live web search' : 'Internal knowledge';
-    const borderClass = isWeb ? 'web-border' : 'rag-border';
+    const isPrediction = data.source_type === 'prediction';
+    const tagClass = isWeb ? 'web' : (isPrediction ? 'prediction' : 'rag');
+    const tagText = isWeb ? 'Live web search' : (isPrediction ? 'Trend prediction' : 'Internal knowledge');
+    const borderClass = isWeb ? 'web-border' : (isPrediction ? 'prediction-border' : 'rag-border');
 
     let html = `
       <div class="label-row"><span class="source-tag ${tagClass}">${tagText}</span></div>
@@ -380,6 +545,32 @@
       div.appendChild(block);
     }
 
+    // Prediction path (docs/TechSpec_v1.1.md §4.2): an approved prediction
+    // gets its own clearly labeled block, visually distinct from a plain
+    // retrieved answer — never just folded into answerBlock above, so a
+    // reader can never mistake one for the other. A pending prediction
+    // shows no draft content at all (never an unconfirmed one), only the
+    // honest "pending" acknowledgment plus an optional fallback block.
+    if (isPrediction && data.prediction_status === 'approved' && data.prediction_content) {
+      const block = document.createElement('div');
+      block.className = 'prediction-block';
+      block.innerHTML = `
+        <div class="prediction-label">Human-confirmed prediction</div>
+        <div class="prediction-body"></div>
+      `;
+      block.querySelector('.prediction-body').textContent = data.prediction_content;
+      div.appendChild(block);
+    } else if (isPrediction && data.prediction_status === 'pending' && data.prediction_fallback) {
+      const block = document.createElement('div');
+      block.className = 'prediction-pending-block';
+      block.innerHTML = `
+        <div class="prediction-pending-label">Related internal analysis (prediction pending human review)</div>
+        <div class="prediction-pending-body"></div>
+      `;
+      block.querySelector('.prediction-pending-body').innerHTML = renderMarkdown(data.prediction_fallback);
+      div.appendChild(block);
+    }
+
     if (data.chart_image) {
       const img = document.createElement('img');
       img.className = 'chart-img';
@@ -387,6 +578,18 @@
       div.appendChild(img);
     }
 
+    threadInner.appendChild(div);
+    scrollToBottom();
+  }
+
+  // Plain-text rendering used only for messages loaded from history (see
+  // loadHistoryIntoView) — no source tag, no citation blocks, since none of
+  // that metadata survives into the persisted checkpoint.
+  function renderHistoricalAiMessage(content) {
+    const div = document.createElement('div');
+    div.className = 'msg msg-ai';
+    div.innerHTML = `<div class="answer-block rag-border"></div>`;
+    div.querySelector('.answer-block').innerHTML = renderMarkdown(content);
     threadInner.appendChild(div);
     scrollToBottom();
   }
@@ -408,12 +611,12 @@
     renderThinking();
 
     try {
-      const res = await fetch(API_URL, {
+      const res = await authFetch('/ask', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           question: question,
-          conversation_history: conversationHistory
+          session_id: sessionId
         })
       });
 
@@ -423,9 +626,16 @@
       removeThinking();
       renderAiMessage(data);
 
-      // Append this turn to history for future requests.
-      conversationHistory.push({ role: 'user', content: question });
-      conversationHistory.push({ role: 'assistant', content: data.answer || '' });
+      // First turn: the server just generated a session_id for us. Write it
+      // into the URL so a refresh, bookmark, or copy-to-another-device
+      // continues the same conversation.
+      if (data.session_id && data.session_id !== sessionId) {
+        sessionId = data.session_id;
+        const url = new URL(window.location.href);
+        url.searchParams.set('session_id', sessionId);
+        history.replaceState(null, '', url);
+      }
+      loadThreadList();
 
     } catch (err) {
       removeThinking();
@@ -459,6 +669,14 @@
       ask(chip.dataset.q);
     });
   });
+
+  // Initial load: restore this conversation's visible history if the URL
+  // already names one (refresh, bookmark, or a link from another device),
+  // and populate the sidebar either way.
+  if (sessionId) {
+    loadHistoryIntoView(sessionId);
+  }
+  loadThreadList();
 </script>
 
 </body>

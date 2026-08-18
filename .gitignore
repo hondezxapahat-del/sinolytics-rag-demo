@@ -9,5 +9,8 @@ __pycache__/
 .venv/
 venv/
 
+# Runtime logs (machine-specific, may contain request content)
+*.log
+
 # Local tooling (machine-specific, not project config)
 .claude/

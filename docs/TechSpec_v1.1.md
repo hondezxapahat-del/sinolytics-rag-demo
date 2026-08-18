@@ -32,7 +32,7 @@ v1.0 现有实现（截至本文档撰写时）：
 v1.0 是三工具路由（`search_documents` / `generate_chart` / `web_search`）。v1.1 在此基础上的变化点（详见第 4 节各小节）：
 
 - 新增第四个工具 `generate_trend_prediction`，带异步审批队列（`trend_predictions` 表 + 审核网页）。
-- 路由规则 3（时效性信号）改为强制并行调用 `search_documents` + `web_search`，不再二选一。
+- ~~路由规则 3（时效性信号）改为强制并行调用 `search_documents` + `web_search`~~——核对现有代码后确认这条不需要做，`web_search` 内部本来就已经并行查了内部资料，详见 4.1。
 - Agent 调用方式从"显式传入 history 列表"改为按 `session_id`（即 `thread_id`）使用 `PostgresSaver` checkpointer。
 - 接入 LangSmith 做全链路可观测性，不侵入业务代码。
 - 请求入口新增一层轻量输入预过滤，命中套话模式直接拦截，不进入 Agent。
@@ -82,7 +82,6 @@ flowchart TB
     F --> RT
     RT <--> CP
     CP <--> CHK
-    RT -->|规则3命中| SD
     RT -->|规则3命中| WS
     RT -->|规则2| GC
     RT -->|规则4| SD
@@ -111,31 +110,29 @@ flowchart TB
 
 **对应**：PRD Requirement 1、2；Goals P0 #1。
 
-**架构决策**：在 Agent 路由层（`agent.py` 的系统提示词路由规则）改造，而不是新增独立工具或只改单个工具内部逻辑。v1.0 的路由规则 3（时效性信号命中）目前只触发 `web_search` 一个工具；v1.1 改为：**规则 3 命中时，Agent 必须同时调用 `search_documents` 和 `web_search` 两个工具**，而不是二选一。规则 4（无时效性信号的纯内部事实问题）保持不变，仍然只走 `search_documents`。
+**现状核查结论：不需要写新代码。** 重新核对现有代码后发现，这项能力 v1.0 已经具备。`tools.py` 的 `search_web()` 被调用时，本来就会用 `ThreadPoolExecutor` **并行**调用 `search_documents`，把内部结果（`internal_analysis`）和外部结果（`web_findings`）打包在同一次工具调用里一起返回；`agent.py` 的系统提示词里也已经有"凡是答案里用到网络搜索的部分，必须明确标注这是来自网络搜索"这条规矩；`ask.html` 也已经把两者渲染成独立展示区块。也就是说，只要路由规则 3（时效性信号）命中、Agent 调用一次 `web_search` 工具，内外部融合展示就已经自动发生了，不需要额外改动。
 
-这个决策的边界是：**融合展示只在"时效性/趋势类问题"上生效，不是所有问题都强制双检索**。理由：产品的差异化价值主张是"内部深度分析 + 外部实时信息"的融合，这个价值在"最新/趋势"类问题上最明显；对纯内部事实问题（例如"出口管制白皮书里对某项定义是什么"）强行拉入网络结果只会稀释答案、增加成本，也超出了产品定位（PRD Non-Goals #6：不追求全网综合能力）。
+**记录一次设计失误**：本节最初的方案是"让 Agent 路由层强制同时调用 `search_documents` 和 `web_search` 两个独立工具"，这个方案设计时没有先核对现有实现，结果是**多此一举**——`search_documents` 会被多算一遍（多花一次检索、重排序、生成的成本），拿到的 `internal_analysis` 内容和现有并行机制算出来的完全一样，没有任何增量价值。这个方案已经废弃，改成如实记录现状，第 3 节的总体架构图也同步做了更正。
 
-**分歧展示策略**：不引入额外的"分歧检测"步骤。内部结果与外部结果始终并列展示、分别标注来源，由读者自己比较判断是否存在分歧——不合并成一句话陈述，这个结构性约束本身就满足"如实呈现分歧"（PRD Requirement 2）的要求，不需要一个额外的、自身也需要被评测的"分歧判断"模型。
+**真正尚未解决、但也不打算解决的部分**：路由规则 4（没有时效性信号的纯内部问题）永远不会检索外部信息——这条边界是 PRD Non-Goals #6 主动划定的（不追求全网综合能力），不算缺口，不需要修。
 
-**流程（时效性信号命中时）**：
+**分歧展示策略（判断不变）**：不需要引入额外的"分歧检测"步骤。内部结果与外部结果本来就是并列展示、分别标注来源，这个结构性约束已经在现有实现里成立，天然满足"如实呈现分歧"（PRD Requirement 2）的要求，不需要一个额外的、自身也需要被评测的"分歧判断"模型。
+
+**流程（时效性信号命中时，现状如此，无需改动）**：
 
 ```mermaid
 sequenceDiagram
     participant U as 用户
     participant A as Agent 路由（agent.py）
     participant W as web_search 工具
-    participant S as search_documents 工具
     U->>A: 提问（含时效性信号）
-    A->>W: 调用
-    A->>S: 调用
-    par 并行执行
-        W-->>A: web_findings[]（含来源/日期）
-        S-->>A: internal_analysis（仅当相关性超过 RELEVANCE_THRESHOLD 才返回）
-    end
+    A->>W: 调用（仅此一次工具调用）
+    W->>W: 内部并行查询 Tavily + search_documents
+    W-->>A: web_findings[]（含来源/日期）+ internal_analysis（仅当相关性超过 RELEVANCE_THRESHOLD 才返回）
     A->>U: 合成回答 + 外部/内部两个独立分区
 ```
 
-**复用现有实现**：`tools.py` 的 `search_web()` 内部已经通过 `ThreadPoolExecutor` 并行调用 `search_documents`，这部分底层能力不需要重建；改动集中在 `agent.py` 的路由规则（强制双工具调用）和前端展示（把"内部/外部"的区分从"偶尔出现的 `internal_analysis` 区块"提升为融合场景下的标准展示模式）。`internal_analysis` 仍保留 `RELEVANCE_THRESHOLD` 门槛——只有内部确有相关内容时才展示，不做无意义的强行铺陈。
+**建议动作**：不写代码，但建议在 4.3 的评测里专门验证一下——挑几个真实的"时效性问题"跑一遍，确认 `internal_analysis` 和 `web_findings` 确实都出现了、来源标注清楚、没有被合并成一句话，用真实跑出来的数据结案，而不是停留在"应该是这样"。
 
 ### 4.2 趋势预测 + 人工确认工作流
 

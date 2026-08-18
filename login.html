@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Sinolytics — Sign in</title>
+<style>
+  :root { --ink: #141414; --paper: #ffffff; --red: #a4161a; --grey: #8a8a8a; --line: #e6e2df; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: var(--paper); color: var(--ink); font-family: "Helvetica Neue", Arial, sans-serif; }
+  body { display: flex; align-items: center; justify-content: center; }
+  .card { width: 100%; max-width: 340px; padding: 24px; }
+  .brand { display: block; text-align: center; font-size: 13px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; text-decoration: none; color: var(--ink); margin-bottom: 32px; }
+  .brand span { color: var(--red); }
+  h1 { font-size: 19px; text-align: center; margin-bottom: 24px; }
+  label { display: block; font-size: 12.5px; color: var(--grey); margin-bottom: 6px; }
+  input { width: 100%; border: 1.5px solid var(--line); border-radius: 10px; padding: 10px 12px; font-size: 14px; font-family: inherit; margin-bottom: 16px; }
+  input:focus { outline: none; border-color: var(--red); }
+  button.submit { width: 100%; background: var(--ink); color: #fff; border: none; border-radius: 10px; padding: 11px; font-size: 14px; font-weight: 600; cursor: pointer; margin-bottom: 14px; }
+  button.submit:hover { opacity: 0.85; }
+  button.submit:disabled { opacity: 0.5; cursor: default; }
+  .toggle { text-align: center; font-size: 13px; color: var(--grey); }
+  .toggle a { color: var(--red); text-decoration: none; cursor: pointer; }
+  .toggle a:hover { text-decoration: underline; }
+  .error { font-size: 13px; color: var(--red); text-align: center; margin-bottom: 14px; min-height: 16px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <a class="brand" href="index.html">Sino<span>lytics</span></a>
+  <h1 id="title">Sign in</h1>
+  <div class="error" id="error"></div>
+  <form id="form">
+    <label for="username">Username</label>
+    <input id="username" autocomplete="username" required>
+    <label for="password">Password</label>
+    <input id="password" type="password" autocomplete="current-password" required>
+    <button class="submit" id="submitBtn" type="submit">Sign in</button>
+  </form>
+  <div class="toggle" id="toggle">No account yet? <a id="toggleLink">Sign up</a></div>
+</div>
+
+<script>
+  const API_BASE = "http://127.0.0.1:8000";
+  const form = document.getElementById('form');
+  const title = document.getElementById('title');
+  const submitBtn = document.getElementById('submitBtn');
+  const toggleLink = document.getElementById('toggleLink');
+  const toggleText = document.getElementById('toggle');
+  const errorEl = document.getElementById('error');
+
+  let mode = 'login'; // 'login' | 'signup'
+
+  // Already signed in? Skip straight to the app.
+  if (localStorage.getItem('access_token')) {
+    window.location.href = 'ask.html';
+  }
+
+  function setMode(next) {
+    mode = next;
+    if (mode === 'login') {
+      title.textContent = 'Sign in';
+      submitBtn.textContent = 'Sign in';
+      toggleText.innerHTML = 'No account yet? <a id="toggleLink">Sign up</a>';
+    } else {
+      title.textContent = 'Create an account';
+      submitBtn.textContent = 'Sign up';
+      toggleText.innerHTML = 'Already have an account? <a id="toggleLink">Sign in</a>';
+    }
+    document.getElementById('toggleLink').addEventListener('click', () => setMode(mode === 'login' ? 'signup' : 'login'));
+    errorEl.textContent = '';
+  }
+  toggleLink.addEventListener('click', () => setMode('signup'));
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorEl.textContent = '';
+    submitBtn.disabled = true;
+
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
+    const endpoint = mode === 'login' ? '/auth/login' : '/auth/signup';
+
+    try {
+      const res = await fetch(`${API_BASE}${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || `Server returned ${res.status}`);
+
+      localStorage.setItem('access_token', data.access_token);
+      window.location.href = 'ask.html';
+    } catch (err) {
+      errorEl.textContent = err.message;
+      submitBtn.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>

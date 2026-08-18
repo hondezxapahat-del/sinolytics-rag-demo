@@ -32,7 +32,7 @@ v1.0's implementation as of this writing:
 v1.0 is a three-tool router (`search_documents` / `generate_chart` / `web_search`). v1.1's changes on top of that (detailed in each subsection of §4):
 
 - A fourth tool, `generate_trend_prediction`, is added, with an asynchronous approval queue (`trend_predictions` table + a review page).
-- Routing rule 3 (timeliness signal) changes to force parallel calls to both `search_documents` and `web_search`, instead of choosing one.
+- ~~Routing rule 3 (timeliness signal) forces parallel calls to both `search_documents` and `web_search`~~ — re-checking the existing code confirmed this isn't needed: `web_search` already queries internal material in parallel internally. See §4.1.
 - The way the Agent is invoked changes from "explicitly pass in a history list" to using a `PostgresSaver` checkpointer keyed by `session_id` (i.e. `thread_id`).
 - LangSmith is integrated for end-to-end observability, without touching business logic.
 - A lightweight input pre-filter is added at the request entry point; matches on solicitation patterns are rejected before ever reaching the Agent.
@@ -82,7 +82,6 @@ flowchart TB
     F --> RT
     RT <--> CP
     CP <--> CHK
-    RT -->|rule 3 hit| SD
     RT -->|rule 3 hit| WS
     RT -->|rule 2| GC
     RT -->|rule 4| SD
@@ -111,31 +110,29 @@ flowchart TB
 
 **Corresponds to**: PRD Requirements 1, 2; Goals P0 #1.
 
-**Architectural decision**: change this at the Agent routing layer (`agent.py`'s system-prompt routing rules), rather than adding an independent tool or only changing logic inside a single tool. In v1.0, routing rule 3 (timeliness signal hit) only triggers the `web_search` tool; in v1.1, **when rule 3 hits, the Agent must call both `search_documents` and `web_search`**, not choose one. Rule 4 (a purely internal factual question with no timeliness signal) stays unchanged, still going only through `search_documents`.
+**Finding after re-checking the current state: no new code needed.** Re-checking the existing code turned up that v1.0 already has this capability. `tools.py`'s `search_web()` already calls `search_documents` **in parallel** via `ThreadPoolExecutor` whenever it's invoked, bundling the internal result (`internal_analysis`) and the external result (`web_findings`) together into a single tool-call response; `agent.py`'s system prompt already has a rule that "any part of the answer drawing on the web search tool must be explicitly labeled as coming from a web search"; and `ask.html` already renders both as separate display blocks. In other words, whenever routing rule 3 (timeliness signal) hits and the Agent calls `web_search` once, internal/external fusion display already happens automatically — no further change is needed.
 
-The boundary on this decision: **fusion display only kicks in for "timeliness/trend" questions — it's not forced dual-retrieval on every question.** Rationale: the product's differentiating value proposition is the fusion of "deep internal analysis" with "real-time external information," and that value is most visible on "latest/trend" questions; forcing web results into a purely internal factual question (e.g. "what does the export-controls whitepaper say a certain term means") would only dilute the answer and add cost, and it would exceed the product's positioning (PRD Non-Goal #6: not competing on whole-web comprehensiveness).
+**Recording a design mistake**: this section's original plan was "have the Agent routing layer force calls to both `search_documents` and `web_search` as independent tool calls." That plan was designed without first checking the existing implementation, and turned out to be **redundant work** — `search_documents` would get run an extra time (an extra retrieval + rerank + generation cost), producing an `internal_analysis` that's identical to what the existing parallel mechanism already computes, with zero incremental value. That plan has been dropped in favor of just documenting the actual current state; §3's overall architecture diagram has been corrected to match.
 
-**Disagreement display strategy**: no extra "disagreement detection" step is introduced. Internal and external results are always displayed side by side, each labeled by source, and it's left to the reader to compare and judge whether there's a disagreement — never merged into a single statement. This structural constraint by itself satisfies "faithfully present disagreement" (PRD Requirement 2), without needing an additional "disagreement judgment" model that would itself need to be evaluated.
+**What's genuinely still unaddressed, but intentionally not being fixed**: routing rule 4 (a purely internal question with no timeliness signal) never retrieves external information at all — but that boundary was deliberately drawn by PRD Non-Goal #6 (not competing on whole-web comprehensiveness), so it isn't a gap that needs fixing.
 
-**Flow (when the timeliness signal is hit)**:
+**Disagreement display strategy (judgment unchanged)**: no extra "disagreement detection" step is needed. Internal and external results are already displayed side by side, each labeled by source — that structural constraint already holds in the existing implementation, and it naturally satisfies "faithfully present disagreement" (PRD Requirement 2) without needing an additional "disagreement judgment" model that would itself need to be evaluated.
+
+**Flow (when the timeliness signal is hit — this is the current state, no change needed)**:
 
 ```mermaid
 sequenceDiagram
     participant U as User
     participant A as Agent routing (agent.py)
     participant W as web_search tool
-    participant S as search_documents tool
     U->>A: Question (contains a timeliness signal)
-    A->>W: Call
-    A->>S: Call
-    par Parallel execution
-        W-->>A: web_findings[] (with source/date)
-        S-->>A: internal_analysis (only returned if relevance clears RELEVANCE_THRESHOLD)
-    end
+    A->>W: Call (this single tool call is all that happens)
+    W->>W: Internally queries Tavily + search_documents in parallel
+    W-->>A: web_findings[] (with source/date) + internal_analysis (only if relevance clears RELEVANCE_THRESHOLD)
     A->>U: Synthesized answer + two separate sections (external/internal)
 ```
 
-**Reuses existing implementation**: `tools.py`'s `search_web()` already calls `search_documents` in parallel via `ThreadPoolExecutor` — that underlying capability doesn't need to be rebuilt. The change is concentrated in `agent.py`'s routing rule (forcing the dual tool call) and frontend display (promoting the internal/external distinction from "an `internal_analysis` block that occasionally shows up" to the standard display mode for fusion scenarios). `internal_analysis` keeps its `RELEVANCE_THRESHOLD` gate — it's only shown when there's genuinely relevant internal content, never padded in for its own sake.
+**Suggested action**: no code to write, but this is worth specifically verifying in the §4.3 evaluation — run a handful of real "timeliness" questions through it and confirm `internal_analysis` and `web_findings` genuinely both show up, sourcing is clearly labeled, and nothing gets merged into a single statement. Close this out with real evaluation data, not with "it should work this way."
 
 ### 4.2 Trend Prediction + Human Confirmation Workflow
 

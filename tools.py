@@ -11,13 +11,14 @@ import re
 import subprocess
 import sys
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime
 from email.utils import parsedate_to_datetime
 from pathlib import Path
 from urllib.parse import urlparse
 
 from dotenv import load_dotenv
 
-from retrieval import hybrid_search, openai_client, rerank
+from retrieval import embed_query, hybrid_search, openai_client, rerank, supabase
 
 load_dotenv()
 
@@ -50,7 +51,11 @@ if TAVILY_API_KEY:
     # topic="news" is what actually gets Tavily to return published_date per
     # result — with the default "general" topic it's usually absent. Without
     # a real date we annotate with source only, per the no-fabrication rule.
-    _tavily = TavilySearch(max_results=5, topic="news")
+    # time_range="month" trims clearly stale results at the source rather
+    # than after the fact — "week" was considered but rejected as too narrow
+    # for low-volume niche topics like China policy briefs, which can go
+    # weeks between real developments without going stale.
+    _tavily = TavilySearch(max_results=5, topic="news", time_range="month")
 else:
     _tavily = None
 
@@ -67,7 +72,11 @@ def build_prompt(question, matches):
         f"问题: {question}\n\n"
         "无论检索到的资料是什么语言，都必须用英文回答。"
         "请充分利用资料里实际包含的信息展开回答，但不要为了显得详细就添加资料"
-        "之外的内容——如果资料本身只够支撑一个简短的回答，那就给一个简短的回答。\n\n"
+        "之外的内容——如果资料本身只够支撑一个简短的回答，那就给一个简短的回答。"
+        "尤其注意：不要凭自己的印象编造或默认某个年份/日期——只有当资料原文里"
+        "明确出现某个具体年份时，才能在回答里提到它；资料没写明年份的，就不要"
+        "加上任何年份限定（比如'截至2024年'这类表述），哪怕这样会让回答听起来"
+        "不够具体。\n\n"
         "Format the answer like a professional consulting brief: open with "
         "exactly ONE sentence stating the core conclusion (no more than "
         "~25 words); if there are multiple genuinely distinct points, expand "
@@ -247,8 +256,16 @@ def search_web(query, match_count=3):
     if _tavily is None:
         return {"web_findings": [], "internal_analysis": None}
 
+    # search_web is only ever invoked for timeliness-signaled questions (per
+    # agent.py's routing rule 3), so it's safe to always bias the Tavily
+    # query toward recency here rather than re-detecting timeliness intent.
+    # The internal search below intentionally uses the original query —
+    # appending date hints would only hurt vector/keyword matching against
+    # documents that aren't scored by recency.
+    tavily_query = f"{query} (as of {datetime.now().year}, latest)"
+
     with ThreadPoolExecutor(max_workers=2) as executor:
-        web_future = executor.submit(_tavily.invoke, {"query": query})
+        web_future = executor.submit(_tavily.invoke, {"query": tavily_query})
         internal_future = executor.submit(search_documents, query, match_count)
         raw = web_future.result()
         internal_result = internal_future.result()
@@ -275,3 +292,102 @@ def search_web(query, match_count=3):
     )
 
     return {"web_findings": web_findings, "internal_analysis": internal_analysis}
+
+
+def _draft_trend_prediction(topic):
+    """Generate a prediction draft in the internal-analyst voice, using
+    retrieved internal passages purely as a style/tone reference (see
+    docs/TechSpec_v1.1.md §4.2) — same "prompt + a few real passages"
+    technique as summarize_prior_experience, not a new modeling approach."""
+    candidates = hybrid_search(topic, match_count=CANDIDATE_COUNT)
+    matches = rerank(topic, candidates, top_n=3) if candidates else []
+    context = "\n\n---\n\n".join(m["content"] for m in matches)
+
+    prompt = (
+        "You are drafting a short, forward-looking trend prediction in the "
+        "voice of a Sinolytics analyst, for internal review before it is "
+        "ever shown to a client. Base the prediction's reasoning style on "
+        "the passages below (if any) — match their tone and how they reason "
+        "from evidence, but the prediction itself is necessarily your own "
+        "forward-looking judgment, not something copied from the passages. "
+        "Keep it to 2-4 sentences. Do not claim more certainty than a "
+        "reasonable forecast warrants.\n\n"
+        f"Topic: {topic}\n\n"
+        f"Reference passages (style/context only):\n{context or '(none found)'}\n\n"
+        "Draft prediction:"
+    )
+    completion = openai_client.chat.completions.create(
+        model=CHAT_MODEL,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    return completion.choices[0].message.content.strip()
+
+
+def _fallback_internal_analysis(topic):
+    """Regular (non-predictive) internal analysis, shown while a prediction
+    is pending review. Explicitly returns None rather than an empty string
+    when there's nothing to fall back on, so the caller can honestly say so
+    instead of showing a blank block (the "double-empty" edge case in
+    docs/TechSpec_v1.1.md §4.2)."""
+    result = search_documents(topic)
+    return result["answer"] if result["sources"] else None
+
+
+def generate_trend_prediction(topic):
+    """Check the approved/pending prediction library first via embedding
+    similarity (match_trend_prediction RPC); only generate + queue a new
+    draft if nothing close enough already exists. Predictions are never
+    returned directly to a user from here — that only happens after a human
+    approves them via review.html (docs/TechSpec_v1.1.md §4.2)."""
+    topic_embedding = embed_query(topic)
+    match = (
+        supabase.rpc("match_trend_prediction", {"query_embedding": topic_embedding})
+        .execute()
+        .data
+    )
+
+    if match:
+        # match_trend_prediction only ever returns pending/approved rows —
+        # a rejected draft never blocks a fresh one from being generated.
+        record = match[0]
+        if record["status"] == "approved":
+            return {"status": "approved", "content": record["draft_content"]}
+        return {"status": "pending", "fallback": _fallback_internal_analysis(topic)}
+
+    draft = _draft_trend_prediction(topic)
+    supabase.table("trend_predictions").insert(
+        {
+            "topic": topic,
+            "topic_embedding": topic_embedding,
+            "draft_content": draft,
+            "status": "pending",
+        }
+    ).execute()
+    return {"status": "pending", "fallback": _fallback_internal_analysis(topic)}
+
+
+def list_pending_predictions():
+    """Backs review.html — the human-confirmation queue (docs/TechSpec_v1.1.md §4.2)."""
+    result = (
+        supabase.table("trend_predictions")
+        .select("id, topic, draft_content, created_at")
+        .eq("status", "pending")
+        .order("created_at")
+        .execute()
+    )
+    return result.data
+
+
+def review_prediction(prediction_id, approve, reviewer_note=None):
+    """Approve/reject a pending prediction from review.html. Rejected drafts
+    stay in the table (status="rejected") rather than being deleted, purely
+    as a record — match_trend_prediction's SQL excludes rejected rows, so a
+    future similar topic always regenerates a fresh draft instead of
+    matching against a stale rejected one."""
+    supabase.table("trend_predictions").update(
+        {
+            "status": "approved" if approve else "rejected",
+            "reviewed_at": datetime.now().isoformat(),
+            "reviewer_note": reviewer_note,
+        }
+    ).eq("id", prediction_id).execute()
