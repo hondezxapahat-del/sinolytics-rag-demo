@@ -246,6 +246,22 @@ def _condense_web_findings(query, raw_items):
     return condensed
 
 
+_YEAR_TOKEN_RE = re.compile(r"\b(19|20)\d{2}\b")
+
+
+def _strip_years(text):
+    """Removes any 4-digit year-looking token (1900-2099) from text. The
+    Agent's LLM occasionally smuggles a guessed year (e.g. defaulting to
+    "2024") into the query it constructs for this tool, which then conflicts
+    with the real current-year hint appended below and measurably hurts
+    search relevance. The prompt-level rule against this (agent.py
+    SYSTEM_PROMPT) isn't 100% reliable on its own — same class of
+    probabilistic behavior as the answer-text date fabrication fixed
+    earlier — so this is a deterministic code-level backstop, not a
+    replacement for the prompt rule."""
+    return _YEAR_TOKEN_RE.sub("", text).strip()
+
+
 def search_web(query, match_count=3):
     """Web search (Tavily) plus an internal knowledge-base check run in
     parallel. web_findings is one entry per source, each tied to its own
@@ -262,7 +278,7 @@ def search_web(query, match_count=3):
     # The internal search below intentionally uses the original query —
     # appending date hints would only hurt vector/keyword matching against
     # documents that aren't scored by recency.
-    tavily_query = f"{query} (as of {datetime.now().year}, latest)"
+    tavily_query = f"{_strip_years(query)} (as of {datetime.now().year}, latest)"
 
     with ThreadPoolExecutor(max_workers=2) as executor:
         web_future = executor.submit(_tavily.invoke, {"query": tavily_query})
