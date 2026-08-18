@@ -4,9 +4,10 @@ search, chart generation, and web search."""
 
 import re
 import uuid
-from datetime import date, datetime, timezone
+from collections import defaultdict
+from datetime import date, datetime, timedelta, timezone
 
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel
@@ -52,8 +53,41 @@ class TokenResponse(BaseModel):
     token_type: str = "bearer"
 
 
+# In-memory, per-IP sliding-window rate limit on signup/login — deliberately
+# simple (no new DB table, matches the daily-quota mechanism's "simplest
+# thing that solves the problem" tradeoff): a single-process demo doesn't
+# need distributed rate limiting, and this resets on every restart/deploy,
+# which is an acceptable cost at this scale. Guards against brute-forcing a
+# password or mass-creating accounts, not a defense against a determined
+# distributed attacker.
+_AUTH_RATE_LIMIT_WINDOW = timedelta(minutes=10)
+_AUTH_RATE_LIMIT_MAX_ATTEMPTS = 10
+_auth_attempts = defaultdict(list)
+
+
+def _client_ip(request: Request):
+    forwarded = request.headers.get("x-forwarded-for")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+    return request.client.host if request.client else "unknown"
+
+
+def _check_auth_rate_limit(request: Request):
+    ip = _client_ip(request)
+    now = datetime.now(timezone.utc)
+    recent = [t for t in _auth_attempts[ip] if now - t < _AUTH_RATE_LIMIT_WINDOW]
+    if len(recent) >= _AUTH_RATE_LIMIT_MAX_ATTEMPTS:
+        raise HTTPException(
+            status_code=429,
+            detail="Too many attempts. Please wait a few minutes and try again.",
+        )
+    recent.append(now)
+    _auth_attempts[ip] = recent
+
+
 @app.post("/auth/signup", response_model=TokenResponse)
-def signup(request: SignupRequest):
+def signup(request: SignupRequest, http_request: Request):
+    _check_auth_rate_limit(http_request)
     try:
         user = create_user(request.username, request.password)
     except AuthError as exc:
@@ -62,7 +96,8 @@ def signup(request: SignupRequest):
 
 
 @app.post("/auth/login", response_model=TokenResponse)
-def login(request: LoginRequest):
+def login(request: LoginRequest, http_request: Request):
+    _check_auth_rate_limit(http_request)
     try:
         user = authenticate_user(request.username, request.password)
     except AuthError as exc:
@@ -183,6 +218,15 @@ REFUSAL_MESSAGE = {
     "zh": "抱歉，我无法处理这个请求。",
 }
 
+# Shown instead of a raw 500 when an external dependency (OpenAI, Tavily,
+# the database) fails or times out mid-request — those are real, expected
+# failure modes for a live demo, not something the user should ever see a
+# stack trace for.
+GENERIC_ERROR_MESSAGE = {
+    "en": "Something went wrong answering that — please try again in a moment.",
+    "zh": "处理这个问题时出了点问题，请稍后再试一次。",
+}
+
 
 def _looks_like_injection_attempt(text):
     return any(pattern.search(text) for pattern in _INJECTION_PATTERNS)
@@ -263,12 +307,23 @@ def ask(request: AskRequest, user_id: int = Depends(get_current_user_id)):
             source_type="internal",
         )
 
-    result = run_agent(
-        question,
-        session_id=session_id,
-        match_count=request.match_count,
-        language=request.language,
-    )
+    # run_agent() reaches out to OpenAI, Tavily, and Postgres — any of those
+    # can time out or error transiently. Without this, that surfaces as a
+    # raw 500 with a stack trace instead of an honest, localized message.
+    try:
+        result = run_agent(
+            question,
+            session_id=session_id,
+            match_count=request.match_count,
+            language=request.language,
+        )
+    except Exception as exc:
+        print(f"[api] /ask failed for session {session_id}: {exc}")
+        return AskResponse(
+            answer=_localized(GENERIC_ERROR_MESSAGE, request.language),
+            session_id=session_id,
+            source_type="internal",
+        )
     _touch_thread(session_id, user_id, question)
 
     return AskResponse(

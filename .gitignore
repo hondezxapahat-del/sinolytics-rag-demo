@@ -8,6 +8,7 @@ __pycache__/
 *.pyc
 .venv/
 venv/
+.pytest_cache/
 
 # Runtime logs (machine-specific, may contain request content)
 *.log

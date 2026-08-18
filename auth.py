@@ -17,9 +17,16 @@ JWT_SECRET_KEY = os.environ["JWT_SECRET_KEY"]
 JWT_ALGORITHM = "HS256"
 TOKEN_LIFETIME = timedelta(days=30)
 
+# Lightweight, not a full complexity policy (uppercase/digits/symbols) — this
+# product deliberately has no password recovery, so a slightly higher floor
+# than "test" reduces trivially-guessable accounts without adding friction
+# disproportionate to a demo-scale login.
+MIN_PASSWORD_LENGTH = 8
+
 
 class AuthError(Exception):
-    """Bad credentials, duplicate username, or an invalid/expired token."""
+    """Bad credentials, duplicate username, weak password, or an
+    invalid/expired token."""
 
 
 def _hash_password(password):
@@ -31,6 +38,11 @@ def _verify_password(password, password_hash):
 
 
 def create_user(username, password):
+    if not username or not username.strip():
+        raise AuthError("Username cannot be empty.")
+    if len(password) < MIN_PASSWORD_LENGTH:
+        raise AuthError(f"Password must be at least {MIN_PASSWORD_LENGTH} characters.")
+
     existing = supabase.table("users").select("id").eq("username", username).execute()
     if existing.data:
         raise AuthError("That username is already taken.")

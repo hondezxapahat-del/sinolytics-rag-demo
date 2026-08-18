@@ -191,6 +191,7 @@ Thin FastAPI wrapper: `POST /ask` takes `{question, conversation_history, match_
 9. (Optional) Test retrieval directly from the CLI: `python search.py "your question"`.
 10. (Optional) Regenerate the price trend chart standalone: `python plot_price_trend.py`.
 11. (Optional) Run the v1.1 evaluation harness: `python evaluate.py` (see `docs/TechSpec_v1.1.md` §4.3).
+12. (Optional) Run the unit test suite: `pip install -r requirements-dev.txt` then `pytest tests/`. Covers the pure, dependency-free helper functions (year-stripping, vague-query detection, date parsing, JWT/password round-trips) — not the LLM-calling functions themselves, which `evaluate.py` covers from an answer-quality angle instead.
 
 ## Future Directions
 
