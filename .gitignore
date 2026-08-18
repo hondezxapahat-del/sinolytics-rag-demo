@@ -11,6 +11,7 @@ venv/
 
 # Runtime logs (machine-specific, may contain request content)
 *.log
+.sinolyticsdemo.pid
 
 # Local tooling (machine-specific, not project config)
 .claude/

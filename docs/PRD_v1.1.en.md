@@ -29,25 +29,24 @@ This positioning risk shows up concretely as the following unresolved gaps:
 2. Add an "internal-analyst-style" trend prediction capability; predictions must pass a human confirmation step before being shown to users.
 3. Answer quality must be quantifiably verifiable, not judged by subjective impression alone.
 4. Runtime status and per-query cost must be visible.
-5. Conversation history must persist, browsable as a list (view, switch, delete) — this needs a notion of user identity to answer "whose history is this" (see Goal 8).
+5. Conversation history must persist.
 6. Provide protection against adversarial external input (prompt extraction, system-prompt leakage, instructions designed to make the system deviate from its intended behavior).
 7. Resolve the problem of noticeably stale web search results.
-8. Add lightweight username+password login — this is a scope increase from the original plan (multi-user auth was originally P1), pulled into P0 because Goal 5's history list can't work without an account concept. Scope is limited to "log in, own your history" — no roles, no password recovery, no email verification.
 
 ### Goals (P1 — do if time allows, carried over from the README's original Future Directions list)
 
-9. Multimodal document parsing (PDF, tables, scanned documents).
-10. Additional chart topics/datasets, beyond the current single NEV price-war chart.
-11. Integration with external BI tooling, so visualization output can plug into a broader dashboard ecosystem.
-12. More complete rate limiting / multi-tenant permission management — beyond the lightweight login in Goal 8 (e.g. per-user quotas, admin roles).
+8. Multimodal document parsing (PDF, tables, scanned documents).
+9. Additional chart topics/datasets, beyond the current single NEV price-war chart.
+10. Integration with external BI tooling, so visualization output can plug into a broader dashboard ecosystem.
+11. Multi-user authentication and rate limiting.
 
 ### Non-Goals
 
-1. Not building a full production system for anonymous public users — even with Goal 8's login, it's still just a username/password, not an enterprise-grade permissions system (no roles, no password-recovery email, no multi-tenant isolation).
+1. Not building a full production system for anonymous public users — even if P1's auth/rate-limiting ships, it's lightweight protection only, not an enterprise-grade permissions system.
 2. Not aiming for fully automated, unreviewed publication of AI-generated trend predictions — the human confirmation step is a hard requirement; there is no "skip human review" mode.
 3. Not expanding the breadth of knowledge-base topics (no new industry-topic documents added) — v1.1 focuses on making the existing corpus solid.
 4. Not migrating or replacing the technology stack — v1.1 is an incremental improvement on the existing system, not a re-platforming effort.
-5. Not building multi-person collaboration or a shared conversation thread — persisted conversation history belongs to one account, not something multiple people co-edit on the same thread.
+5. Not building multi-person collaboration or a shared conversation thread — persisted conversation history remains a single-user memory, not something multiple people co-edit.
 6. Not committing to web search timeliness fully matching ChatGPT's web version — if the staleness problem turns out to be a limitation of the underlying data source itself, v1.1 only guarantees "the best achievable given the current information source," without an open-ended commitment.
 
 ## Requirements
@@ -79,8 +78,6 @@ This positioning risk shows up concretely as the following unresolved gaps:
 
 12. Users switching devices or refreshing the page should be able to continue seeing prior conversation content.
 13. Users need to be able to look back at questions asked earlier, not just within the current page session.
-13a. Users need to be able to log in with a username+password and see a list of conversations belonging to their own account (browsable, switchable, deletable) — not just recover a single conversation via a link.
-13b. One account must never see another account's conversation list — identity isolation only needs to reach "each account sees only what it created," nothing finer-grained.
 
 ### Adversarial Input Protection (lightweight)
 
