@@ -4,7 +4,7 @@ search, chart generation, and web search."""
 
 import re
 import uuid
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -93,6 +93,32 @@ def _touch_thread(session_id, user_id, first_question):
         supabase.table("conversation_threads").update(
             {"updated_at": datetime.now(timezone.utc).isoformat()}
         ).eq("session_id", session_id).execute()
+
+
+# Global (not per-account) daily cap on real /ask calls — a deliberately
+# simple guardrail against the shared demo running up API costs, whether
+# from someone signing up just to poke at it or heavier-than-expected
+# legitimate use. Not exact under concurrent requests (check-then-write,
+# no locking) — acceptable for this project's actual traffic level.
+DAILY_ASK_LIMIT = 100
+DAILY_LIMIT_MESSAGE = (
+    "This demo has reached its shared daily usage limit. Please try again tomorrow."
+)
+
+
+def _try_consume_daily_quota(limit=DAILY_ASK_LIMIT):
+    """Returns True and records the call if today's count is under the
+    limit; returns False (without recording) if the limit is already hit."""
+    today = date.today().isoformat()
+    result = supabase.table("daily_usage").select("count").eq("usage_date", today).execute()
+    current = result.data[0]["count"] if result.data else 0
+    if current >= limit:
+        return False
+    if result.data:
+        supabase.table("daily_usage").update({"count": current + 1}).eq("usage_date", today).execute()
+    else:
+        supabase.table("daily_usage").insert({"usage_date": today, "count": 1}).execute()
+    return True
 
 
 class ConversationSummary(BaseModel):
@@ -210,6 +236,9 @@ def ask(request: AskRequest, user_id: int = Depends(get_current_user_id)):
     owner = _get_thread_owner(session_id)
     if owner is not None and owner != user_id:
         raise HTTPException(status_code=403, detail="This conversation doesn't belong to you.")
+
+    if not _try_consume_daily_quota():
+        return AskResponse(answer=DAILY_LIMIT_MESSAGE, session_id=session_id, source_type="internal")
 
     if _looks_like_injection_attempt(question):
         _touch_thread(session_id, user_id, question)
