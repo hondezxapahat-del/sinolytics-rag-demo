@@ -1,0 +1,14 @@
+# Vercel only needs to serve the static frontend (index.html, ask.html,
+# login.html, review.html). Everything else here is backend source that
+# deploys separately (to Render) — no reason for Vercel to upload or serve
+# it as static files.
+*.py
+*.sql
+*.log
+__pycache__/
+docs/
+.claude/
+price_trend.png
+server.log
+sinolyticsdemo.ps1
+sinolyticsdemo.bat

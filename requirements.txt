@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+openai
+supabase
+python-dotenv
+pandas
+matplotlib
+langchain
+langchain-openai
+langchain-tavily
+langgraph-checkpoint-postgres
+psycopg[binary,pool]
+bcrypt
+pyjwt
