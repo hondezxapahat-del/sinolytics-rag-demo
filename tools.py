@@ -44,6 +44,23 @@ CHART_TOPIC_KEYWORDS = [
     "byd", "xiaopeng", "tesla", "nio", "geely",
 ]
 
+# Product decision (2026-08-18 conversation): this product's audience is
+# Sinolytics' own clients, so a web search must never hand them a link to a
+# competing China-risk advisory firm's own paid-report page — that's the
+# opposite of what a client-facing tool should ever surface. This starting
+# list is derived from public research on comparable China-geopolitical-risk
+# advisory firms, not an exhaustive competitor audit — extend it as new
+# cases turn up.
+_COMPETITOR_DOMAINS = [
+    "controlrisks.com",
+    "rhg.com",
+    "kroll.com",
+    "teneo.com",
+    "s-rm.com",
+    "albrightstonebridge.com",
+    "dgagroup.com",
+]
+
 TAVILY_API_KEY = os.environ.get("TAVILY_API_KEY")
 if TAVILY_API_KEY:
     from langchain_tavily import TavilySearch
@@ -55,7 +72,9 @@ if TAVILY_API_KEY:
     # than after the fact — "week" was considered but rejected as too narrow
     # for low-volume niche topics like China policy briefs, which can go
     # weeks between real developments without going stale.
-    _tavily = TavilySearch(max_results=5, topic="news", time_range="month")
+    _tavily = TavilySearch(
+        max_results=5, topic="news", time_range="month", exclude_domains=_COMPETITOR_DOMAINS
+    )
 else:
     _tavily = None
 
@@ -261,6 +280,45 @@ def _condense_web_findings(query, raw_items, language="en"):
     return condensed
 
 
+# A prompt-only "ask for clarification when the question has no real topic"
+# rule (agent.py SYSTEM_PROMPT) proved unreliable in testing: gpt-4o-mini
+# over-applied it even to clearly topic-bearing queries like "latest trend
+# in AI pricing", degrading a previously-100%-reliable rule from 5/5 correct
+# down to 0/5. This deterministic word-count check replaces that approach —
+# same "prompt is too unreliable, add a code-level backstop" pattern as
+# _strip_years() below, except here it's the primary mechanism, not a backstop.
+_TIMELINESS_TRIGGERS = [
+    "newest", "latest", "recent", "recently", "trend", "trends",
+    "this year", "what's", "whats", "what is", "what are",
+    # Every question on this product is implicitly about China, so "China"
+    # alone never counts as a real topic — the Agent tends to pad a vague
+    # query with it (e.g. "latest trends in China") even when the user's
+    # own question named no subject at all.
+    "china", "chinese", "中国",
+    "最新", "最近", "趋势", "今年", "是什么", "是啥", "有什么", "怎么样",
+]
+_GENERIC_FILLER_RE = re.compile(r"\b(the|is|are|in|of|a|an|for|on|about)\b", re.I)
+_NON_WORD_RE = re.compile(r"[?？!！,，.。\s]+")
+
+
+def _query_is_too_vague(query):
+    """True when a query, after stripping timeliness trigger phrases and
+    generic filler, has no content left to actually search for — e.g. just
+    "latest trend" or "最新趋势是什么" on their own. A search run on a query
+    this generic returns unfocused, often irrelevant Tavily results.
+
+    Strips year tokens first (_strip_years, defined below) — otherwise a
+    stray guessed year like "newest trend in China 2024" (the Agent
+    occasionally still adds one despite the prompt rule against it) counts
+    as "content" and slips a genuinely vague query past this check."""
+    remainder = _strip_years(query).lower()
+    for trigger in _TIMELINESS_TRIGGERS:
+        remainder = remainder.replace(trigger, "")
+    remainder = _GENERIC_FILLER_RE.sub("", remainder)
+    remainder = _NON_WORD_RE.sub("", remainder)
+    return len(remainder) <= 1
+
+
 _YEAR_TOKEN_RE = re.compile(r"\b(19|20)\d{2}\b")
 
 
@@ -285,7 +343,10 @@ def search_web(query, match_count=3, language="en"):
     the internal search clears the same relevance bar used elsewhere
     (RELEVANCE_THRESHOLD) — never included just because a search ran."""
     if _tavily is None:
-        return {"web_findings": [], "internal_analysis": None}
+        return {"web_findings": [], "internal_analysis": None, "clarification_needed": False}
+
+    if _query_is_too_vague(query):
+        return {"web_findings": [], "internal_analysis": None, "clarification_needed": True}
 
     # search_web is only ever invoked for timeliness-signaled questions (per
     # agent.py's routing rule 3), so it's safe to always bias the Tavily
@@ -322,7 +383,11 @@ def search_web(query, match_count=3, language="en"):
         internal_result["answer"] if internal_result.get("is_relevant") else None
     )
 
-    return {"web_findings": web_findings, "internal_analysis": internal_analysis}
+    return {
+        "web_findings": web_findings,
+        "internal_analysis": internal_analysis,
+        "clarification_needed": False,
+    }
 
 
 def _draft_trend_prediction(topic, language="en"):
