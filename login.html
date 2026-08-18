@@ -22,23 +22,27 @@
   .toggle a { color: var(--red); text-decoration: none; cursor: pointer; }
   .toggle a:hover { text-decoration: underline; }
   .error { font-size: 13px; color: var(--red); text-align: center; margin-bottom: 14px; min-height: 16px; }
+  .lang-toggle { position: fixed; top: 20px; right: 24px; z-index: 10; font-size: 12px; color: var(--grey); background: none; border: 1px solid var(--line); border-radius: 20px; padding: 7px 16px; cursor: pointer; }
+  .lang-toggle:hover { border-color: var(--red); color: var(--red); }
 </style>
 </head>
 <body>
+<button class="lang-toggle" id="langToggle"></button>
 <div class="card">
   <a class="brand" href="index.html">Sino<span>lytics</span></a>
   <h1 id="title">Sign in</h1>
   <div class="error" id="error"></div>
   <form id="form">
-    <label for="username">Username</label>
+    <label for="username" data-i18n="login_label_username">Username</label>
     <input id="username" autocomplete="username" required>
-    <label for="password">Password</label>
+    <label for="password" data-i18n="login_label_password">Password</label>
     <input id="password" type="password" autocomplete="current-password" required>
     <button class="submit" id="submitBtn" type="submit">Sign in</button>
   </form>
   <div class="toggle" id="toggle">No account yet? <a id="toggleLink">Sign up</a></div>
 </div>
 
+<script src="i18n.js"></script>
 <script>
   const API_BASE = "https://sinolytics-rag-demo-api.onrender.com";
   const form = document.getElementById('form');
@@ -58,18 +62,19 @@
   function setMode(next) {
     mode = next;
     if (mode === 'login') {
-      title.textContent = 'Sign in';
-      submitBtn.textContent = 'Sign in';
-      toggleText.innerHTML = 'No account yet? <a id="toggleLink">Sign up</a>';
+      title.textContent = t('login_title_signin');
+      submitBtn.textContent = t('login_btn_signin');
+      toggleText.innerHTML = `${t('login_toggle_to_signup_pre')} <a id="toggleLink">${t('login_toggle_to_signup_link')}</a>`;
     } else {
-      title.textContent = 'Create an account';
-      submitBtn.textContent = 'Sign up';
-      toggleText.innerHTML = 'Already have an account? <a id="toggleLink">Sign in</a>';
+      title.textContent = t('login_title_signup');
+      submitBtn.textContent = t('login_btn_signup');
+      toggleText.innerHTML = `${t('login_toggle_to_signin_pre')} <a id="toggleLink">${t('login_toggle_to_signin_link')}</a>`;
     }
     document.getElementById('toggleLink').addEventListener('click', () => setMode(mode === 'login' ? 'signup' : 'login'));
     errorEl.textContent = '';
   }
   toggleLink.addEventListener('click', () => setMode('signup'));
+  onLanguageChange(() => setMode(mode));
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -96,6 +101,9 @@
       submitBtn.disabled = false;
     }
   });
+
+  setMode('login');
+  initLanguageToggle();
 </script>
 </body>
 </html>

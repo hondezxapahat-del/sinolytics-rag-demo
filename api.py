@@ -101,9 +101,10 @@ def _touch_thread(session_id, user_id, first_question):
 # legitimate use. Not exact under concurrent requests (check-then-write,
 # no locking) — acceptable for this project's actual traffic level.
 DAILY_ASK_LIMIT = 100
-DAILY_LIMIT_MESSAGE = (
-    "This demo has reached its shared daily usage limit. Please try again tomorrow."
-)
+DAILY_LIMIT_MESSAGE = {
+    "en": "This demo has reached its shared daily usage limit. Please try again tomorrow.",
+    "zh": "这个演示版本今天的共享额度已用完，请明天再来试用。",
+}
 
 
 def _try_consume_daily_quota(limit=DAILY_ASK_LIMIT):
@@ -177,11 +178,18 @@ _INJECTION_PATTERNS = [
     re.compile(r"developer\s+mode", re.I),
 ]
 
-REFUSAL_MESSAGE = "Sorry, I can't help with that request."
+REFUSAL_MESSAGE = {
+    "en": "Sorry, I can't help with that request.",
+    "zh": "抱歉，我无法处理这个请求。",
+}
 
 
 def _looks_like_injection_attempt(text):
     return any(pattern.search(text) for pattern in _INJECTION_PATTERNS)
+
+
+def _localized(message_dict, language):
+    return message_dict.get(language, message_dict["en"])
 
 
 class AskRequest(BaseModel):
@@ -191,6 +199,9 @@ class AskRequest(BaseModel):
     # on the first turn — the server generates one and returns it; send the
     # same value back on every follow-up turn to keep history connected.
     session_id: str | None = None
+    # Current interface language (docs/TechSpec_v1.2.md §4.4) — the AI answers
+    # in this language regardless of what language the question was asked in.
+    language: str = "en"
 
 
 class Source(BaseModel):
@@ -238,16 +249,25 @@ def ask(request: AskRequest, user_id: int = Depends(get_current_user_id)):
         raise HTTPException(status_code=403, detail="This conversation doesn't belong to you.")
 
     if not _try_consume_daily_quota():
-        return AskResponse(answer=DAILY_LIMIT_MESSAGE, session_id=session_id, source_type="internal")
+        return AskResponse(
+            answer=_localized(DAILY_LIMIT_MESSAGE, request.language),
+            session_id=session_id,
+            source_type="internal",
+        )
 
     if _looks_like_injection_attempt(question):
         _touch_thread(session_id, user_id, question)
-        return AskResponse(answer=REFUSAL_MESSAGE, session_id=session_id, source_type="internal")
+        return AskResponse(
+            answer=_localized(REFUSAL_MESSAGE, request.language),
+            session_id=session_id,
+            source_type="internal",
+        )
 
     result = run_agent(
         question,
         session_id=session_id,
         match_count=request.match_count,
+        language=request.language,
     )
     _touch_thread(session_id, user_id, question)
 

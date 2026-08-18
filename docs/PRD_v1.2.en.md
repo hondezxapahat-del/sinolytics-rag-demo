@@ -4,12 +4,13 @@
 
 v1.1 (see [PRD_v1.1.en.md](PRD_v1.1.en.md)) has shipped: internal/external fusion display (found to already exist in v1.0, no new development needed), the trend-prediction + human-confirmation workflow, the evaluation methodology, runtime observability, conversation history persistence, adversarial input protection, and the web search quality fix.
 
-Turning v1.1's design into real code, and actually testing it, surfaced two things that motivated this v1.2:
+Turning v1.1's design into real code, and actually testing it, surfaced three things that motivated this v1.2:
 
 1. v1.1 solved "conversation history doesn't disappear on refresh or device switch," but not the further need of "let me look back at everything I've asked and manage those records" — that requires introducing the concept of an account, which was outside v1.1's original scope.
 2. Real-world testing surfaced a reproducible issue: the system would occasionally invent a specific year in an answer that appears nowhere in the source material (e.g. the source literally says "2026" and the answer says "as of 2024"). This isn't high-frequency, but it directly violates the "never fabricate" principle this whole project has been built around — even a single wrong year is enough to make someone doubt the credibility of the entire answer.
+3. This is a consulting firm built around a "China desk" — its users (e.g. interviewers) are likely to be English-speaking, so the product should default to a fluent English experience while still fully serving Chinese-speaking users. That calls for a single switch that toggles both the interface language and the answer language together.
 
-v1.2 addresses both.
+v1.2 addresses all three.
 
 ## Problem Statement
 
@@ -26,6 +27,7 @@ v1.1's technical design also flagged an unresolved risk: a conversation link is 
 1. Add lightweight username+password login — originally a "do if time allows" P1 item in v1.1, pulled forward now because the conversation history list can't work without an account. Scope stays narrow: just "log in, own your history" — no roles, no password recovery, no email verification.
 2. Once logged in, users can see a history list belonging only to their own account — browsable, switchable, deletable.
 3. Eliminate the class of problem where the answer fabricates a specific year/date that isn't in the source material — this applies to text generated at any stage (tool acknowledgments, the final synthesized answer, etc.), all of which must follow "no grounding, no date."
+4. Users can switch the whole product's language (English/Chinese) from the interface; once switched, both the interface text and the AI's answer language follow that choice.
 
 ### Non-Goals
 
@@ -33,6 +35,9 @@ v1.1's technical design also flagged an unresolved risk: a conversation link is 
 2. No multi-person collaboration or shared conversations — history remains each account's own memory, not something multiple people co-edit on the same thread.
 3. Not revisiting or changing anything else v1.1 already settled (evaluation methodology, the prediction human-confirmation workflow, observability, etc.) — v1.2 only covers the two items in this document.
 4. Not a systematic hunt to eliminate every kind of model hallucination — only tightens the rules for the specific, empirically-observed failure mode of fabricating years/dates. This does not mean hallucination in general has been "solved."
+5. No support for any third language beyond English and Chinese.
+6. No translation/retroactive conversion of saved conversation history — saved records keep the language they were generated in.
+7. The language preference is not tied to the account in the database — it's remembered only on the local device/browser, so a new device/browser requires choosing again.
 
 ## Requirements
 
@@ -53,11 +58,26 @@ v1.1's technical design also flagged an unresolved risk: a conversation link is 
 7. Any specific year or date stated in an answer must be traceable to the cited material or search results; if the source material doesn't state a year, the answer must not invent one.
 8. This requirement must hold across every stage that generates user-facing text — not enforced in just one place while others are missed.
 
+### Language Switching
+
+9. There must be a clearly visible, easy-to-use language switch control in the interface.
+10. The default language is English.
+11. After switching, every piece of visible interface text (buttons, headings, prompts, etc.) must change to the selected language.
+12. After switching, the AI answers questions in the currently selected language, regardless of what language the user's question was asked in.
+13. The language selection is remembered until the user manually changes it back; a new device or browser requires choosing again.
+14. A single AI answer must never mix Chinese and English, unless the user explicitly asks for a mixed-language answer.
+15. Saved conversation history keeps the language it was generated in — it is not retroactively translated just because the interface language was later switched.
+16. review.html (the internal review page) does not need to support this language switch.
+
 ## Success Metrics
 
 1. **Account isolation holds**: testing with two separate accounts confirms neither can see or reach the other's conversation history, even with a direct link to a specific conversation.
 2. **History list works**: conversations can be created, switched to, and deleted normally, and what the list shows matches the actual conversation content.
 3. **Year fabrication is substantially reduced**: re-running the specific questions that previously reproduced this issue, multiple times, no longer produces a year not present in the source material.
+4. **English experience is fluent end to end**: operating entirely in English (login, asking questions, viewing history) never surfaces leftover Chinese interface text.
+5. **Chinese experience is equally complete**: after switching to Chinese, the same end-to-end operation never surfaces leftover English text.
+6. **Answer language responds correctly**: after switching languages, the AI's answer language follows the rule in Requirement 12.
+7. **No language mixing**: repeated testing shows the AI's answers never mix Chinese and English, except when the user explicitly asks for a mixed-language answer.
 
 ## Out of Scope
 
@@ -65,6 +85,9 @@ v1.1's technical design also flagged an unresolved risk: a conversation link is 
 - Email verification for accounts.
 - Team/organization accounts or shared conversations across multiple people.
 - Opening an old conversation from the history list only shows the plain text Q&A from that time — not the original source citations, chart images, or prediction labels. This is a known limitation of v1.1's persistence design; v1.2 does not address it, and whether to fix it later is left open.
+- Support for any third language beyond English and Chinese.
+- Translation/retroactive conversion of saved conversation history.
+- Cross-device sync of the language preference (a new device requires choosing again).
 
 ## Open Questions
 

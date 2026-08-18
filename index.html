@@ -203,24 +203,40 @@
     display: none;
   }
   .account-bar:hover { border-color: var(--red); color: var(--red); }
+
+  .lang-toggle {
+    position: fixed;
+    top: 20px;
+    right: 128px;
+    z-index: 10;
+    font-size: 12px;
+    color: var(--grey);
+    background: none;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 7px 16px;
+    cursor: pointer;
+  }
+  .lang-toggle:hover { border-color: var(--red); color: var(--red); }
 </style>
 </head>
 <body>
 
+<button class="lang-toggle" id="langToggle"></button>
 <button class="account-bar" id="accountBar"></button>
 
 <div class="stage">
   <div class="left">
     <div class="eyebrow">Sinolytics</div>
-    <h1>Your <span>China Strategy</span><br>& Geopolitics<br>Experts</h1>
-    <p class="sub">
+    <h1 data-i18n-html="idx_headline_html">Your <span>China Strategy</span><br>& Geopolitics<br>Experts</h1>
+    <p class="sub" data-i18n="idx_sub">
       We turn regulatory complexity, supply chain exposure, and shifting policy signals
       into clear, decision-ready intelligence — built by analysts who read Beijing
       and Brussels equally well.
     </p>
 
     <a class="cta" href="ask.html" style="text-decoration:none;">
-      Start Your Consultation
+      <span data-i18n="idx_cta">Start Your Consultation</span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M5 12h14M13 6l6 6-6 6"/>
       </svg>
@@ -229,15 +245,15 @@
     <div class="meta-row">
       <div class="meta-item">
         <div class="num">2017</div>
-        <div class="lbl">Founded</div>
+        <div class="lbl" data-i18n="idx_meta_founded">Founded</div>
       </div>
       <div class="meta-item">
         <div class="num">Berlin · Beijing</div>
-        <div class="lbl">Offices</div>
+        <div class="lbl" data-i18n="idx_meta_offices">Offices</div>
       </div>
       <div class="meta-item">
         <div class="num">24/7</div>
-        <div class="lbl">Geolytics Hub</div>
+        <div class="lbl" data-i18n="idx_meta_hub">Geolytics Hub</div>
       </div>
     </div>
   </div>
@@ -281,6 +297,7 @@
   </div>
 </div>
 
+<script src="i18n.js"></script>
 <script>
   // Shows "Log out" when a session exists (localStorage — same token
   // ask.html/review.html read), "Sign in" otherwise. Logging out clears the
@@ -288,8 +305,12 @@
   const accountBar = document.getElementById('accountBar');
   const loggedIn = !!localStorage.getItem('access_token');
 
-  accountBar.textContent = loggedIn ? 'Log out' : 'Sign in';
+  function renderAccountBar() {
+    accountBar.textContent = loggedIn ? t('account_logout') : t('account_signin');
+  }
+  renderAccountBar();
   accountBar.style.display = 'block';
+  onLanguageChange(renderAccountBar);
 
   accountBar.addEventListener('click', () => {
     if (loggedIn) {
@@ -297,6 +318,8 @@
     }
     window.location.href = 'login.html';
   });
+
+  initLanguageToggle();
 </script>
 
 </body>

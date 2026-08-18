@@ -62,15 +62,25 @@ else:
 WEB_SEARCH_AVAILABLE = _tavily is not None
 
 
-def build_prompt(question, matches):
+# Interface language toggle (docs/TechSpec_v1.2.md §4.4) — every LLM call in
+# this module that produces text a user might actually see needs to respect
+# the caller's chosen language, not just the top-level agent's own final
+# message in agent.py. `_LANGUAGE_NAMES`/`_LANGUAGE_LABEL_ZH` mirror agent.py's
+# own mapping.
+_LANGUAGE_NAMES = {"en": "English", "zh": "Chinese"}
+_LANGUAGE_LABEL_ZH = {"en": "英文", "zh": "中文"}
+
+
+def build_prompt(question, matches, language="en"):
     context = "\n\n---\n\n".join(match["content"] for match in matches)
+    lang_label = _LANGUAGE_LABEL_ZH.get(language, "英文")
     return (
         "请仅根据下面提供的资料回答问题。如果资料中没有相关信息，就说不知道。"
         "不要用你自己的通用知识去补充资料里没有的背景、历史或策略信息——"
         "哪怕这样会让回答显得更简短。\n\n"
         f"资料:\n{context}\n\n"
         f"问题: {question}\n\n"
-        "无论检索到的资料是什么语言，都必须用英文回答。"
+        f"无论检索到的资料是什么语言，都必须用{lang_label}回答。"
         "请充分利用资料里实际包含的信息展开回答，但不要为了显得详细就添加资料"
         "之外的内容——如果资料本身只够支撑一个简短的回答，那就给一个简短的回答。"
         "尤其注意：不要凭自己的印象编造或默认某个年份/日期——只有当资料原文里"
@@ -95,15 +105,16 @@ def build_prompt(question, matches):
     )
 
 
-def summarize_prior_experience(matches, question):
+def summarize_prior_experience(matches, question, language="en"):
     """One short sentence synthesizing what these specific passages support —
     never a bridge to some other topic or dataset not actually present here."""
     context = "\n\n---\n\n".join(match["content"] for match in matches)
+    lang_name = _LANGUAGE_NAMES.get(language, "English")
     prompt = (
         "You are reminding a colleague what Sinolytics' own internal research "
         "already covers that's relevant to their current question. Write ONE "
-        "short sentence (max ~30 words) summarizing the most relevant takeaway "
-        "from the passages below.\n\n"
+        f"short sentence (max ~30 words), in {lang_name}, summarizing the most "
+        "relevant takeaway from the passages below.\n\n"
         "Only state what these specific passages actually support. Do not "
         "connect this topic to any other topic, dataset, or prior analysis "
         "that isn't directly present in the passages themselves — if the "
@@ -120,7 +131,7 @@ def summarize_prior_experience(matches, question):
     return completion.choices[0].message.content.strip()
 
 
-def search_documents(query, match_count=3):
+def search_documents(query, match_count=3, language="en"):
     candidates = hybrid_search(query, match_count=CANDIDATE_COUNT)
     if not candidates:
         return {
@@ -144,13 +155,13 @@ def search_documents(query, match_count=3):
 
     completion = openai_client.chat.completions.create(
         model=CHAT_MODEL,
-        messages=[{"role": "user", "content": build_prompt(query, context_matches)}],
+        messages=[{"role": "user", "content": build_prompt(query, context_matches, language)}],
     )
     answer = completion.choices[0].message.content
 
     # Gate expert_note strictly on relevance — never generate it just to
     # sound experienced when the retrieved content is a weak/tangential match.
-    expert_note = summarize_prior_experience(matches, query) if is_relevant else ""
+    expert_note = summarize_prior_experience(matches, query, language) if is_relevant else ""
 
     return {
         "answer": answer,
@@ -211,7 +222,7 @@ def _format_date(raw_date):
         return raw_date
 
 
-def _condense_web_findings(query, raw_items):
+def _condense_web_findings(query, raw_items, language="en"):
     """One point per source, in one batched LLM call — each point is
     grounded in exactly one excerpt (no mixing across sources, which would
     make per-finding source attribution unreliable)."""
@@ -221,16 +232,20 @@ def _condense_web_findings(query, raw_items):
     numbered = "\n\n".join(
         f"[{i}] {(item.get('content') or '')[:1500]}" for i, item in enumerate(raw_items)
     )
+    lang_name = _LANGUAGE_NAMES.get(language, "English")
     prompt = (
         "For each numbered web page excerpt below, write ONE concise sentence "
-        "(max ~30 words) stating the single most relevant takeaway for the "
-        "question, using ONLY what that excerpt actually says. Do not mix "
-        "information across excerpts, and do not add outside knowledge.\n\n"
+        f"(max ~30 words), in {lang_name}, stating the single most relevant "
+        "takeaway for the question, using ONLY what that excerpt actually "
+        "says. Do not mix information across excerpts, and do not add "
+        "outside knowledge.\n\n"
         f"Question: {query}\n\n"
         f"Excerpts:\n{numbered}\n\n"
         "Respond with exactly one line per excerpt, in the format "
-        "'[index]: sentence'. If an excerpt has nothing relevant to the "
-        "question, respond with '[index]: SKIP'."
+        "'[index]: sentence' — keep the '[index]:' prefix exactly as shown "
+        "(digits and punctuation, not translated), only the sentence itself "
+        f"should be in {lang_name}. If an excerpt has nothing relevant to "
+        "the question, respond with '[index]: SKIP'."
     )
     completion = openai_client.chat.completions.create(
         model=CHAT_MODEL,
@@ -262,7 +277,7 @@ def _strip_years(text):
     return _YEAR_TOKEN_RE.sub("", text).strip()
 
 
-def search_web(query, match_count=3):
+def search_web(query, match_count=3, language="en"):
     """Web search (Tavily) plus an internal knowledge-base check run in
     parallel. web_findings is one entry per source, each tied to its own
     source name/URL/date — never a freeform paragraph, so attribution can't
@@ -282,12 +297,12 @@ def search_web(query, match_count=3):
 
     with ThreadPoolExecutor(max_workers=2) as executor:
         web_future = executor.submit(_tavily.invoke, {"query": tavily_query})
-        internal_future = executor.submit(search_documents, query, match_count)
+        internal_future = executor.submit(search_documents, query, match_count, language)
         raw = web_future.result()
         internal_result = internal_future.result()
 
     items = raw.get("results", []) if isinstance(raw, dict) else (raw or [])
-    condensed = _condense_web_findings(query, items)
+    condensed = _condense_web_findings(query, items, language)
 
     web_findings = []
     for i, item in enumerate(items):
@@ -310,7 +325,7 @@ def search_web(query, match_count=3):
     return {"web_findings": web_findings, "internal_analysis": internal_analysis}
 
 
-def _draft_trend_prediction(topic):
+def _draft_trend_prediction(topic, language="en"):
     """Generate a prediction draft in the internal-analyst voice, using
     retrieved internal passages purely as a style/tone reference (see
     docs/TechSpec_v1.1.md §4.2) — same "prompt + a few real passages"
@@ -318,6 +333,7 @@ def _draft_trend_prediction(topic):
     candidates = hybrid_search(topic, match_count=CANDIDATE_COUNT)
     matches = rerank(topic, candidates, top_n=3) if candidates else []
     context = "\n\n---\n\n".join(m["content"] for m in matches)
+    lang_name = _LANGUAGE_NAMES.get(language, "English")
 
     prompt = (
         "You are drafting a short, forward-looking trend prediction in the "
@@ -325,9 +341,9 @@ def _draft_trend_prediction(topic):
         "ever shown to a client. Base the prediction's reasoning style on "
         "the passages below (if any) — match their tone and how they reason "
         "from evidence, but the prediction itself is necessarily your own "
-        "forward-looking judgment, not something copied from the passages. "
-        "Keep it to 2-4 sentences. Do not claim more certainty than a "
-        "reasonable forecast warrants.\n\n"
+        f"forward-looking judgment, not something copied from the passages. "
+        f"Write it in {lang_name}. Keep it to 2-4 sentences. Do not claim "
+        "more certainty than a reasonable forecast warrants.\n\n"
         f"Topic: {topic}\n\n"
         f"Reference passages (style/context only):\n{context or '(none found)'}\n\n"
         "Draft prediction:"
@@ -339,22 +355,29 @@ def _draft_trend_prediction(topic):
     return completion.choices[0].message.content.strip()
 
 
-def _fallback_internal_analysis(topic):
+def _fallback_internal_analysis(topic, language="en"):
     """Regular (non-predictive) internal analysis, shown while a prediction
     is pending review. Explicitly returns None rather than an empty string
     when there's nothing to fall back on, so the caller can honestly say so
     instead of showing a blank block (the "double-empty" edge case in
     docs/TechSpec_v1.1.md §4.2)."""
-    result = search_documents(topic)
+    result = search_documents(topic, language=language)
     return result["answer"] if result["sources"] else None
 
 
-def generate_trend_prediction(topic):
+def generate_trend_prediction(topic, language="en"):
     """Check the approved/pending prediction library first via embedding
     similarity (match_trend_prediction RPC); only generate + queue a new
     draft if nothing close enough already exists. Predictions are never
     returned directly to a user from here — that only happens after a human
-    approves them via review.html (docs/TechSpec_v1.1.md §4.2)."""
+    approves them via review.html (docs/TechSpec_v1.1.md §4.2).
+
+    An already-approved prediction's stored `draft_content` is returned
+    exactly as a human reviewer confirmed it, in whatever language it was
+    drafted in — never dynamically retranslated to match a later request's
+    `language`, the same "don't touch what was already confirmed" principle
+    behind not retranslating saved conversation history (PRD_v1.2.md
+    Non-Goal 6). Only newly-generated drafts follow the caller's language."""
     topic_embedding = embed_query(topic)
     match = (
         supabase.rpc("match_trend_prediction", {"query_embedding": topic_embedding})
@@ -368,9 +391,9 @@ def generate_trend_prediction(topic):
         record = match[0]
         if record["status"] == "approved":
             return {"status": "approved", "content": record["draft_content"]}
-        return {"status": "pending", "fallback": _fallback_internal_analysis(topic)}
+        return {"status": "pending", "fallback": _fallback_internal_analysis(topic, language)}
 
-    draft = _draft_trend_prediction(topic)
+    draft = _draft_trend_prediction(topic, language)
     supabase.table("trend_predictions").insert(
         {
             "topic": topic,
@@ -379,7 +402,7 @@ def generate_trend_prediction(topic):
             "status": "pending",
         }
     ).execute()
-    return {"status": "pending", "fallback": _fallback_internal_analysis(topic)}
+    return {"status": "pending", "fallback": _fallback_internal_analysis(topic, language)}
 
 
 def list_pending_predictions():

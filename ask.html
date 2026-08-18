@@ -166,6 +166,9 @@
   .send-btn:disabled { background: #e6c9ca; cursor: default; }
   .send-btn svg { width: 15px; height: 15px; stroke: #fff; }
   .hint { font-size: 11.5px; color: #b0b0b0; text-align: center; margin-top: 8px; }
+
+  .lang-toggle { font-size: 12px; color: var(--grey); background: none; border: 1px solid var(--line); border-radius: 20px; padding: 7px 14px; cursor: pointer; }
+  .lang-toggle:hover { border-color: var(--red); color: var(--red); }
 </style>
 </head>
 <body>
@@ -175,28 +178,31 @@
     <div class="sidebar-top">
       <a class="brand" href="index.html">Sino<span>lytics</span></a>
     </div>
-    <button class="sidebar-new-chat" onclick="startNewChat()">+ New chat</button>
+    <button class="sidebar-new-chat" onclick="startNewChat()" data-i18n="ask_new_chat">+ New chat</button>
     <div class="thread-list" id="threadList"></div>
     <div class="sidebar-bottom">
-      <button class="logout-btn" onclick="logout()">Log out</button>
+      <button class="logout-btn" onclick="logout()" data-i18n="account_logout">Log out</button>
     </div>
   </div>
 
 <div class="app">
   <div class="top">
     <a class="brand" href="index.html">Sino<span>lytics</span></a>
-    <button class="new-chat" onclick="startNewChat()">+ New chat</button>
+    <div style="display:flex; align-items:center; gap:10px;">
+      <button class="lang-toggle" id="langToggle"></button>
+      <button class="new-chat" onclick="startNewChat()" data-i18n="ask_new_chat">+ New chat</button>
+    </div>
   </div>
 
   <div class="thread" id="thread">
     <div class="thread-inner" id="threadInner">
       <div class="empty-state" id="emptyState">
-        <div class="greeting">What would you like to know about<br><span class="accent">China's policy landscape</span>?</div>
+        <div class="greeting" data-i18n-html="ask_greeting_html">What would you like to know about<br><span class="accent">China's policy landscape</span>?</div>
         <div class="suggestions">
-          <div class="chip" data-q="Why are Chinese AI models so much cheaper?">Why are Chinese AI models cheaper?</div>
-          <div class="chip" data-q="What are the key risks in China's battery supply chain?">Battery supply chain risks</div>
-          <div class="chip" data-q="How is China using export controls as a geopolitical tool?">China's export controls strategy</div>
-          <div class="chip" data-q="Show me a chart of the EV price trend over the past year">Show EV price trend chart</div>
+          <div class="chip" data-i18n="ask_chip1_label" data-i18n-q="ask_chip1_q" data-q="Why are Chinese AI models so much cheaper?">Why are Chinese AI models cheaper?</div>
+          <div class="chip" data-i18n="ask_chip2_label" data-i18n-q="ask_chip2_q" data-q="What are the key risks in China's battery supply chain?">Battery supply chain risks</div>
+          <div class="chip" data-i18n="ask_chip3_label" data-i18n-q="ask_chip3_q" data-q="How is China using export controls as a geopolitical tool?">China's export controls strategy</div>
+          <div class="chip" data-i18n="ask_chip4_label" data-i18n-q="ask_chip4_q" data-q="Show me a chart of the EV price trend over the past year">Show EV price trend chart</div>
         </div>
       </div>
     </div>
@@ -205,19 +211,20 @@
   <div class="composer">
     <div class="composer-inner">
       <div class="ask-box">
-        <textarea id="q" rows="1" placeholder="Ask a follow-up, or start a new topic…"></textarea>
+        <textarea id="q" rows="1" data-i18n-placeholder="ask_placeholder" placeholder="Ask a follow-up, or start a new topic…"></textarea>
         <button class="send-btn" id="sendBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
             <path d="M5 12h14M13 6l6 6-6 6"/>
           </svg>
         </button>
       </div>
-      <div class="hint">Answers may combine internal reports and live web results — sources are always labeled.</div>
+      <div class="hint" data-i18n="ask_hint">Answers may combine internal reports and live web results — sources are always labeled.</div>
     </div>
   </div>
 </div>
 </div>
 
+<script src="i18n.js"></script>
 <script>
   const API_BASE = "https://sinolytics-rag-demo-api.onrender.com";
   const API_URL = `${API_BASE}/ask`;
@@ -243,7 +250,7 @@
     });
     if (res.status === 401) {
       logout();
-      throw new Error('Session expired');
+      throw new Error(t('ask_session_expired'));
     }
     return res;
   }
@@ -277,13 +284,13 @@
       if (!res.ok) throw new Error(`Server returned ${res.status}`);
       renderThreadList(await res.json());
     } catch (err) {
-      threadList.innerHTML = `<div class="thread-empty">Couldn't load history.</div>`;
+      threadList.innerHTML = `<div class="thread-empty">${t('ask_load_history_error')}</div>`;
     }
   }
 
   function renderThreadList(items) {
     if (items.length === 0) {
-      threadList.innerHTML = '<div class="thread-empty">No conversations yet.</div>';
+      threadList.innerHTML = `<div class="thread-empty">${t('ask_no_conversations')}</div>`;
       return;
     }
     threadList.innerHTML = '';
@@ -300,7 +307,7 @@
 
       row.querySelector('.thread-item-delete').addEventListener('click', async (e) => {
         e.stopPropagation();
-        if (!confirm(`Delete "${item.title}"?`)) return;
+        if (!confirm(t('ask_delete_confirm').replace('{title}', item.title))) return;
         await authFetch(`/conversations/${item.session_id}`, { method: 'DELETE' });
         if (item.session_id === sessionId) {
           startNewChat();
@@ -337,7 +344,7 @@
         }
       });
     } catch (err) {
-      renderError(`Couldn't load this conversation: ${err.message}`);
+      renderError(`${t('ask_conversation_load_error_prefix')} ${err.message}`);
     }
   }
 
@@ -414,18 +421,19 @@
     div.innerHTML = `
       <div class="thinking">
         <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-        <span id="thinkingText">Reading your question…</span>
+        <span id="thinkingText"></span>
       </div>`;
+    div.querySelector('#thinkingText').textContent = t('ask_thinking_1');
     threadInner.appendChild(div);
     scrollToBottom();
 
     // Cycles through plausible status phrases purely for perceived responsiveness —
     // this does NOT reflect real backend progress unless wired to actual streaming.
     const phrases = [
-      'Reading your question…',
-      'Searching internal reports…',
-      'Checking relevance of sources…',
-      'Drafting a structured answer…'
+      t('ask_thinking_1'),
+      t('ask_thinking_2'),
+      t('ask_thinking_3'),
+      t('ask_thinking_4'),
     ];
     let i = 0;
     thinkingInterval = setInterval(() => {
@@ -460,7 +468,7 @@
     const isWeb = data.source_type === 'web';
     const isPrediction = data.source_type === 'prediction';
     const tagClass = isWeb ? 'web' : (isPrediction ? 'prediction' : 'rag');
-    const tagText = isWeb ? 'Live web search' : (isPrediction ? 'Trend prediction' : 'Internal knowledge');
+    const tagText = isWeb ? t('ask_tag_web') : (isPrediction ? t('ask_tag_prediction') : t('ask_tag_internal'));
     const borderClass = isWeb ? 'web-border' : (isPrediction ? 'prediction-border' : 'rag-border');
 
     let html = `
@@ -494,7 +502,7 @@
         // Never fabricate a date — only show one if the backend actually sent one.
         const label = finding.date
           ? `${finding.source} · ${finding.date}`
-          : `Source: ${finding.source}`;
+          : `${t('ask_source_prefix')} ${finding.source}`;
         if (finding.url) {
           const link = document.createElement('a');
           link.href = finding.url;
@@ -517,14 +525,14 @@
     if (isWeb) {
       const note = document.createElement('div');
       note.className = 'expert-note';
-      note.innerHTML = '<b>Note:</b> preliminary signal from a live web search — pending expert review, not a finalized Sinolytics assessment.';
+      note.innerHTML = t('ask_note_web_html');
       div.appendChild(note);
     } else if (data.expert_note && data.expert_note.trim().length > 0) {
       // Only shown when the backend judged the retrieved context
       // genuinely relevant enough to support a summarized takeaway.
       const note = document.createElement('div');
       note.className = 'expert-note';
-      note.innerHTML = `<b>Based on our prior analysis:</b> ${data.expert_note}`;
+      note.innerHTML = `${t('ask_note_internal_prefix_html')}${data.expert_note}`;
       div.appendChild(note);
     }
 
@@ -534,7 +542,7 @@
 
       const label = document.createElement('div');
       label.className = 'internal-analysis-label';
-      label.textContent = "Sinolytics' prior analysis on this topic";
+      label.textContent = t('ask_internal_analysis_label');
       block.appendChild(label);
 
       const body = document.createElement('div');
@@ -555,18 +563,20 @@
       const block = document.createElement('div');
       block.className = 'prediction-block';
       block.innerHTML = `
-        <div class="prediction-label">Human-confirmed prediction</div>
+        <div class="prediction-label"></div>
         <div class="prediction-body"></div>
       `;
+      block.querySelector('.prediction-label').textContent = t('ask_prediction_label');
       block.querySelector('.prediction-body').textContent = data.prediction_content;
       div.appendChild(block);
     } else if (isPrediction && data.prediction_status === 'pending' && data.prediction_fallback) {
       const block = document.createElement('div');
       block.className = 'prediction-pending-block';
       block.innerHTML = `
-        <div class="prediction-pending-label">Related internal analysis (prediction pending human review)</div>
+        <div class="prediction-pending-label"></div>
         <div class="prediction-pending-body"></div>
       `;
+      block.querySelector('.prediction-pending-label').textContent = t('ask_prediction_pending_label');
       block.querySelector('.prediction-pending-body').innerHTML = renderMarkdown(data.prediction_fallback);
       div.appendChild(block);
     }
@@ -616,7 +626,8 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           question: question,
-          session_id: sessionId
+          session_id: sessionId,
+          language: getLanguage()
         })
       });
 
@@ -639,7 +650,7 @@
 
     } catch (err) {
       removeThinking();
-      renderError(`Something went wrong: ${err.message}`);
+      renderError(`${t('ask_generic_error_prefix')} ${err.message}`);
     } finally {
       sendBtn.disabled = false;
     }
@@ -677,6 +688,11 @@
     loadHistoryIntoView(sessionId);
   }
   loadThreadList();
+
+  // Re-render whatever's language-dependent but not covered by static
+  // data-i18n markup (thread list's empty/error state text).
+  onLanguageChange(() => loadThreadList());
+  initLanguageToggle();
 </script>
 
 </body>
