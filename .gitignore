@@ -16,3 +16,7 @@ venv/
 
 # Local tooling (machine-specific, not project config)
 .claude/
+
+# Real third-party source material kept locally for reference only —
+# never part of the RAG ingestion pipeline, must never be committed.
+docs/*.pdf
