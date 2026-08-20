@@ -1,10 +1,10 @@
 # Sinolytics RAG Demo — Technical Design v1.2
 
-> This document is written against [PRD_v1.2.en.md](PRD_v1.2.en.md) and describes the technical design behind login, the conversation-history list, the year-fabrication fix, and language switching. Unlike the v1.1 tech spec (design first, then implementation), this document is a factual record of code that was already written and tested.
+> This document is written against [PRD_v1.2.en.md](PRD_v1.2.en.md) and describes the technical design behind login, the conversation-history list, the year-fabrication fix, language switching, and the answer-specificity fix. Unlike the v1.1 tech spec (design first, then implementation), this document is a factual record of code that was already written and tested.
 
 ## 1. Background and Goals
 
-Corresponds to PRD v1.2: v1.1 already handled conversation-history persistence (LangGraph `PostgresSaver` checkpointer, see [TechSpec_v1.1.en.md](TechSpec_v1.1.en.md) §4.5), but had no concept of an account and no way to list "everything I've asked." Separately, real-world testing surfaced a reproducible year-fabrication issue. Separately again, the product serves a "China desk" consulting firm whose users likely speak English as a first language, which calls for a switch that toggles both the interface and answer language together. This document records how all three were actually addressed.
+Corresponds to PRD v1.2: v1.1 already handled conversation-history persistence (LangGraph `PostgresSaver` checkpointer, see [TechSpec_v1.1.en.md](TechSpec_v1.1.en.md) §4.5), but had no concept of an account and no way to list "everything I've asked." Separately, real-world testing surfaced a reproducible year-fabrication issue. Separately again, the product serves a "China desk" consulting firm whose users likely speak English as a first language, which calls for a switch that toggles both the interface and answer language together. Testing also surfaced answers reading as generic on content-rich documents (e.g. the export-controls whitepaper), not making use of the specific information actually present. This document records how all four were actually addressed.
 
 ## 2. Current State Analysis (after v1.1)
 
@@ -13,6 +13,7 @@ Corresponds to PRD v1.2: v1.1 already handled conversation-history persistence (
 - `/ask` had no identity check at all — anyone could call it directly.
 - Answers would occasionally state a specific year that doesn't appear in the source material (e.g. the source literally says "2026" and the answer says "as of 2024") — the root cause was that the existing prompts only forbade "padding in background information beyond the source material," with no rule specifically targeting "fabricating a year/date," which reads like phrasing but is actually fabricating a fact.
 - The interface only ever had one language, hardcoded into the HTML, with no switching mechanism. The AI's answer language followed whatever language the question was asked in, with no independent concept of "current interface language" and nothing in the code that could override it.
+- `search_documents()` passed `match_count` (default 3) straight in as `rerank()`'s `top_n` — meaning reranking itself already truncated the candidate pool down to 3, no matter how many chunks were genuinely relevant. The `MIN_CONTEXT_SCORE` filter further down only had those already-truncated 3 to filter from, so it couldn't do its intended job of letting relevance decide the count dynamically. A content-rich document (e.g. the export-controls whitepaper) might genuinely have 8-10 chunks clear the relevance bar, but only 3 ever made it into the answer-generation prompt — this was the actual root cause of generic-reading answers.
 
 ## 3. Overall Architecture
 
@@ -115,6 +116,25 @@ The design deliberately stays lightweight: no frontend framework or i18n library
 
 - Saved conversation history is left completely alone — an old record keeps whatever language it was generated in and is never retroactively translated just because the interface language was switched later (explicitly excluded in the PRD).
 
+### 4.5 Answer Specificity Fix
+
+**Chunk count follows relevance, not a fixed number**
+
+- The retrieval pool size fed into rerank (`CANDIDATE_COUNT`) went from 5 to 15, giving downstream filtering more raw material to work with.
+- `rerank()` already scores every candidate in one batched LLM call (`score_relevance_batch`) before truncating to `top_n` — so changing `search_documents()`'s call to pass the full candidate count as `top_n`, instead of `match_count` (a fixed small number), costs no extra scoring calls; it just stops discarding candidates before their relevance was even known.
+- What actually decides "how many go into the answer" changed to "every chunk that clears `MIN_CONTEXT_SCORE`, capped by `match_count`" — `match_count`'s role shifted from "hard truncation before reranking" to "a ceiling applied after relevance filtering," and its default was raised from 3 to 12. A broad, well-covered topic now genuinely gets more material; a narrow one still gets only what's actually relevant.
+
+**Self-check after generation**
+
+- New `_self_check_and_revise()`: hands the freshly-drafted answer, together with the source chunks it was written from, back to the model for one more pass — explicitly checking two things: (1) does the draft use a vague word ("various", "several", "significant") anywhere the source actually states a concrete number/date/organization name; (2) does the source contain a clearly relevant point the draft omitted. If either applies, it outputs a corrected answer; otherwise it returns the draft unchanged, no forced rewriting.
+- This step is only added after `search_documents()`'s main answer generation — it does not cover `_condense_web_findings` (web-search summarization) or `_draft_trend_prediction` (prediction drafting). The diagnosed root cause was specific to the internal-retrieval answer path; there's no evidence the same failure exists in those other paths, so no unrelated changes were made there without cause.
+- `search_web()`'s internal cross-check and `_fallback_internal_analysis()` (the fallback shown while a prediction is pending review) both call `search_documents()` directly, so they inherit this fix automatically — no separate change needed.
+
+**How it was verified**
+
+- Manual comparison: ran a content-rich question ("mechanisms and risks of China's export controls") against the pre-fix and post-fix code side by side, confirming the post-fix answer is visibly more specific (names an actual regulation, uses actual terminology) rather than a subjective impression.
+- Quantified check: re-ran `evaluate.py` (the evaluation framework PRD_v1.1 Requirement 7 already established) to confirm the fix didn't regress this product's win rate or LLM-judge scores against baseline — the first time this framework was actually used to validate one specific fix's effect, rather than just existing as a capability.
+
 ## 5. Risks and Mitigations
 
 | Risk | Description | Mitigation |
@@ -124,6 +144,8 @@ The design deliberately stays lightweight: no frontend framework or i18n library
 | History-list titles are just the first 60 characters of the first question | If the first question is very long or generic (e.g. "hi"), the list title may not be distinctive enough | An accepted simplification that doesn't affect core functionality; revisit with smarter title generation only if this becomes a real usability problem |
 | The AI answer-language instruction is a prompt-level constraint, same as the year-fabrication fix | "Answer in language X" is equally probabilistic and can't be guaranteed at 100% — in theory, Chinese/English mixing could still occur | Same tradeoff as §4.3: repeated testing didn't reproduce it, but this is not a mathematical guarantee; a real recurrence needs to be logged and handled on its own |
 | Login/signup error messages aren't localized | Every other piece of text on those two pages follows the language switch except the error messages, which stay in English | Already stated in this section and the PRD as a deliberate lightweight tradeoff, not an oversight — the trigger frequency (wrong username/password, etc.) is low enough that the impact is limited |
+| Raising the chunk-count ceiling increases response time and call cost | A longer answer-generation prompt, plus one extra LLM call for the self-check pass | Already confirmed explicitly with the user as an accepted tradeoff (response speed/cost vs. answer quality); if cost becomes a real problem later, both the `match_count` ceiling and whether the self-check runs at all are independently tunable |
+| This fix hasn't been validated at a corpus scale far beyond the current one | The current corpus is only 4 topics; the pool size and chunk ceiling were tuned against that scale | Explicitly excluded in the PRD Non-Goals; if the corpus genuinely grows, these parameters will very likely need re-tuning — the current values shouldn't be assumed to carry over |
 
 ## 6. Resolution of PRD Open Questions
 
@@ -137,10 +159,11 @@ The design deliberately stays lightweight: no frontend framework or i18n library
 **Files touched / added**
 
 - Added: `auth.py` (password hashing, token issuance/verification), `login.html`, `auth_and_threads.sql` (`users`/`conversation_threads` table setup), `i18n.js` (the Chinese/English dictionary and toggle logic).
-- Changed: `api.py` (auth endpoints, `/conversations` endpoints, `/ask` now checks identity and thread ownership, `AskRequest` gains a `language` field, `DAILY_LIMIT_MESSAGE`/`REFUSAL_MESSAGE` are now bilingual), `ask.html` (sidebar, logout button, requests now carry the token, wired into `i18n.js`, language toggle button), `index.html` / `login.html` (login-status entry point in the top corner, wired into `i18n.js`, language toggle button), `tools.py` / `agent.py` (prompt adjustments for year/date honesty, plus the `language`-driven answer-language instruction).
+- Changed: `api.py` (auth endpoints, `/conversations` endpoints, `/ask` now checks identity and thread ownership, `AskRequest` gains a `language` field, `DAILY_LIMIT_MESSAGE`/`REFUSAL_MESSAGE` are now bilingual), `ask.html` (sidebar, logout button, requests now carry the token, wired into `i18n.js`, language toggle button), `index.html` / `login.html` (login-status entry point in the top corner, wired into `i18n.js`, language toggle button), `tools.py` / `agent.py` (prompt adjustments for year/date honesty, plus the `language`-driven answer-language instruction, dynamic chunk sizing, new `_self_check_and_revise()`).
 
 **Still to be produced / decided at implementation time**
 
 - The concrete user experience once a token expires (whether a prompt message, auto-refresh, etc. is needed).
 - Large-scale statistical validation of the year-fabrication fix (if stronger confidence is needed later, this could be folded into §4.3's evaluation question set as a dedicated test-case category).
 - The exact set of keys/strings `i18n.js` needs to cover — left to be filled in during implementation rather than enumerated up front at the design stage.
+- Large-scale statistical validation of the answer-specificity fix — same as the year-fabrication fix, this has been shown to be a meaningful improvement via manual comparison and one evaluation run, not a mathematical guarantee.

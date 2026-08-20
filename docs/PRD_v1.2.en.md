@@ -4,13 +4,14 @@
 
 v1.1 (see [PRD_v1.1.en.md](PRD_v1.1.en.md)) has shipped: internal/external fusion display (found to already exist in v1.0, no new development needed), the trend-prediction + human-confirmation workflow, the evaluation methodology, runtime observability, conversation history persistence, adversarial input protection, and the web search quality fix.
 
-Turning v1.1's design into real code, and actually testing it, surfaced three things that motivated this v1.2:
+Turning v1.1's design into real code, and actually testing it, surfaced four things that motivated this v1.2:
 
 1. v1.1 solved "conversation history doesn't disappear on refresh or device switch," but not the further need of "let me look back at everything I've asked and manage those records" — that requires introducing the concept of an account, which was outside v1.1's original scope.
 2. Real-world testing surfaced a reproducible issue: the system would occasionally invent a specific year in an answer that appears nowhere in the source material (e.g. the source literally says "2026" and the answer says "as of 2024"). This isn't high-frequency, but it directly violates the "never fabricate" principle this whole project has been built around — even a single wrong year is enough to make someone doubt the credibility of the entire answer.
 3. This is a consulting firm built around a "China desk" — its users (e.g. interviewers) are likely to be English-speaking, so the product should default to a fluent English experience while still fully serving Chinese-speaking users. That calls for a single switch that toggles both the interface language and the answer language together.
+4. Real-world testing also surfaced this: on content-rich documents (e.g. the export-controls whitepaper), answers read as generic — not wrong, just not making use of the specific numbers, organizations, or provisions actually present in the source. The root cause was that retrieval always fed a fixed, small number of chunks into the answer prompt regardless of how much of a document was genuinely relevant — the richer the topic, the more it got shortchanged. This connects directly to PRD_v1.1 Requirement 7's original promise to "prove this product beats a non-retrieval general-purpose LLM baseline in this vertical" — a generic answer can't carry that promise, so strictly speaking this isn't a new feature, it's a P0 commitment that wasn't actually being met.
 
-v1.2 addresses all three.
+v1.2 addresses all four.
 
 ## Problem Statement
 
@@ -20,6 +21,8 @@ v1.1's technical design also flagged an unresolved risk: a conversation link is 
 
 **Occasional year fabrication strikes directly at this product's core selling point.** Since PRD v1.1, this project has repeatedly emphasized "prove this is more trustworthy than a general-purpose LLM — never pad an answer with fabricated content beyond what the source material contains." Inventing a year that isn't in the source material is a direct counterexample to exactly that principle — and it's a particularly dangerous kind of error, because it reads completely naturally and isn't the sort of thing a user would catch on common sense alone. If it surfaces in a real setting (e.g. an interview demo) and gets questioned, it undermines trust in the whole system being "reliable," not just that one answer.
 
+**Generic answers strike at the other half of the same selling point.** Year fabrication is "saying something it shouldn't (inventing)"; generic answers are "not saying something it should (failing to use information the source actually contains)" — both erode the same core claim that this product understands the vertical better than a general-purpose LLM. PRD_v1.1 Requirement 7 explicitly requires the evaluation to prove this product beats a non-retrieval baseline — if the answers themselves are generic enough to carry no real substance, that evaluation produces a number without meaning.
+
 ## Goals & Non-Goals
 
 ### Goals (P0)
@@ -28,6 +31,7 @@ v1.1's technical design also flagged an unresolved risk: a conversation link is 
 2. Once logged in, users can see a history list belonging only to their own account — browsable, switchable, deletable.
 3. Eliminate the class of problem where the answer fabricates a specific year/date that isn't in the source material — this applies to text generated at any stage (tool acknowledgments, the final synthesized answer, etc.), all of which must follow "no grounding, no date."
 4. Users can switch the whole product's language (English/Chinese) from the interface; once switched, both the interface text and the AI's answer language follow that choice.
+5. On content-rich documents, answers need to make use of the specific numbers, organizations, or provisions actually present in the source — not the same degree of generic summary regardless of how much material a document actually contains.
 
 ### Non-Goals
 
@@ -38,6 +42,7 @@ v1.1's technical design also flagged an unresolved risk: a conversation link is 
 5. No support for any third language beyond English and Chinese.
 6. No translation/retroactive conversion of saved conversation history — saved records keep the language they were generated in.
 7. The language preference is not tied to the account in the database — it's remembered only on the local device/browser, so a new device/browser requires choosing again.
+8. Not optimized for a large increase in corpus size — the current corpus is small (4 topics), and this fix hasn't been validated at a corpus scale far beyond the current one.
 
 ## Requirements
 
@@ -69,6 +74,12 @@ v1.1's technical design also flagged an unresolved risk: a conversation link is 
 15. Saved conversation history keeps the language it was generated in — it is not retroactively translated just because the interface language was later switched.
 16. review.html (the internal review page) does not need to support this language switch.
 
+### Answer Specificity
+
+17. Answers should preferentially cite the specific numbers, dates, and organization/company names actually present in the source material, instead of using vague words ("various", "several", "significant") to summarize information the source could have stated concretely.
+18. The number of reference chunks included in an answer needs to follow however many chunks actually clear the relevance bar — not a fixed small number regardless of how much of a document is genuinely relevant or how many relevant chunks were actually retrieved.
+19. After generating an answer, a self-check pass is needed that reviews whether specific information from the source got replaced with vague wording, or whether clearly relevant source content was omitted — and corrects the answer before it's returned if either applies.
+
 ## Success Metrics
 
 1. **Account isolation holds**: testing with two separate accounts confirms neither can see or reach the other's conversation history, even with a direct link to a specific conversation.
@@ -78,6 +89,8 @@ v1.1's technical design also flagged an unresolved risk: a conversation link is 
 5. **Chinese experience is equally complete**: after switching to Chinese, the same end-to-end operation never surfaces leftover English text.
 6. **Answer language responds correctly**: after switching languages, the AI's answer language follows the rule in Requirement 12.
 7. **No language mixing**: repeated testing shows the AI's answers never mix Chinese and English, except when the user explicitly asks for a mixed-language answer.
+8. **Noticeably more specific answers**: comparing before/after on the specific questions that previously reproduced the "generic answer" problem (e.g. export-controls-whitepaper-related questions), the post-fix answer visibly uses concrete numbers/organizations/provisions actually present in the source, instead of a vague summary.
+9. **Evaluation confirms the baseline is still beaten**: re-running the evaluation PRD_v1.1 Requirement 7 already established (this product vs. a non-retrieval general-purpose LLM baseline) confirms this product's answer quality is still at or above baseline on most questions — this evaluation already existed as of v1.1; v1.2 just re-runs it to confirm the fix didn't regress it.
 
 ## Out of Scope
 
@@ -88,6 +101,7 @@ v1.1's technical design also flagged an unresolved risk: a conversation link is 
 - Support for any third language beyond English and Chinese.
 - Translation/retroactive conversion of saved conversation history.
 - Cross-device sync of the language preference (a new device requires choosing again).
+- Retrieval optimization for a corpus scaled far beyond the current 4 topics — out of scope for this fix.
 
 ## Open Questions
 
