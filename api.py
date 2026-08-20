@@ -238,7 +238,11 @@ def _localized(message_dict, language):
 
 class AskRequest(BaseModel):
     question: str
-    match_count: int = 3
+    # 2026-08-19: raised from 3 — search_documents() now treats this as a
+    # ceiling applied after relevance filtering, not a fixed pre-filter
+    # truncation, so a higher default lets content-rich topics actually use
+    # more of what's genuinely relevant instead of being capped at 3.
+    match_count: int = 12
     # Identifies the conversation thread (docs/TechSpec_v1.1.md §4.5). Omit
     # on the first turn — the server generates one and returns it; send the
     # same value back on every follow-up turn to keep history connected.

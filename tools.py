@@ -24,7 +24,12 @@ load_dotenv()
 
 CHAT_MODEL = "gpt-4o-mini"
 PROJECT_DIR = Path(__file__).parent
-CANDIDATE_COUNT = 5
+# Retrieval pool size fed into rerank (2026-08-19 fix — was 5). A fixed
+# small pool meant a content-rich source document (e.g. the export-controls
+# whitepaper) never had more than a handful of its chunks even considered,
+# regardless of how much of it was genuinely relevant — see MAX_CONTEXT_CHUNKS
+# below for the other half of this fix.
+CANDIDATE_COUNT = 15
 
 # Below this rerank score (0-10 scale), retrieved content is considered too
 # weakly related to the question to base an "expert note" on — expert_note
@@ -32,10 +37,8 @@ CANDIDATE_COUNT = 5
 RELEVANCE_THRESHOLD = 6.5
 
 # Below this rerank score, a chunk isn't included in the answer prompt at
-# all. rerank() always returns exactly top_n candidates regardless of how
-# relevant they actually are, so without this filter, weak/tangential
-# chunks get padded into the context and the model dutifully turns them
-# into extra "points" even though they're near-noise.
+# all — weak/tangential chunks don't get padded into the context just to
+# hit a count.
 MIN_CONTEXT_SCORE = 5.0
 
 CHART_TOPIC_KEYWORDS = [
@@ -150,7 +153,44 @@ def summarize_prior_experience(matches, question, language="en"):
     return completion.choices[0].message.content.strip()
 
 
-def search_documents(query, match_count=3, language="en"):
+def _self_check_and_revise(question, answer, matches, language="en"):
+    """One more LLM pass over the drafted answer against its own source
+    material (2026-08-19 fix for generic-sounding answers on content-rich
+    documents). Catches two specific failures: hedging with a vague word
+    ("various", "several", "significant") when the source actually had a
+    concrete number/date/name available, and dropping a clearly relevant
+    point present in the source. Returns the answer unchanged when neither
+    applies — this is a targeted check, not a rewrite-everything pass."""
+    context = "\n\n---\n\n".join(m["content"] for m in matches)
+    lang_name = _LANGUAGE_NAMES.get(language, "English")
+    prompt = (
+        "Below is a draft answer and the source passages it was written "
+        "from. Check two things: (1) does the draft use a vague word "
+        "('various', 'several', 'significant', etc.) anywhere the source "
+        "passages actually state a concrete number, date, or organization/"
+        "company name that could have been used instead; (2) does the "
+        "source contain a clearly relevant point the draft omitted "
+        "entirely.\n\n"
+        "If either applies, output a corrected version of the answer — "
+        "replace the vague wording with the specific detail, or add the "
+        "missing point — keeping the same structure and style as the "
+        "draft. If neither applies, output the draft exactly as given, "
+        "unchanged.\n\n"
+        f"Output must be in {lang_name}. Output ONLY the final answer text "
+        "itself — no explanation of what you checked or changed.\n\n"
+        f"Source passages:\n{context}\n\n"
+        f"Question: {question}\n\n"
+        f"Draft answer:\n{answer}\n\n"
+        "Final answer:"
+    )
+    completion = openai_client.chat.completions.create(
+        model=CHAT_MODEL,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    return completion.choices[0].message.content
+
+
+def search_documents(query, match_count=12, language="en"):
     candidates = hybrid_search(query, match_count=CANDIDATE_COUNT)
     if not candidates:
         return {
@@ -160,15 +200,25 @@ def search_documents(query, match_count=3, language="en"):
             "is_relevant": False,
         }
 
-    matches = rerank(query, candidates, top_n=match_count)
+    # Rerank the FULL candidate pool — score_relevance_batch already scores
+    # every candidate in one batched call regardless of top_n, so keeping
+    # more of what's already scored costs nothing extra. `match_count` no
+    # longer truncates the pool before relevance is even known (that was
+    # the actual root cause of generic-sounding answers on content-rich
+    # documents — a topic with 8 genuinely relevant chunks only ever got 3
+    # of them into the answer prompt); it's now applied below, after
+    # filtering by relevance.
+    matches = rerank(query, candidates, top_n=len(candidates))
     top_score = matches[0]["relevance_score"] if matches else 0
     is_relevant = top_score >= RELEVANCE_THRESHOLD
 
-    # Only pass chunks that actually clear the bar into the answer prompt —
-    # don't pad in tangential filler just because rerank always returns
-    # exactly top_n candidates. Fall back to the single best match so a
-    # genuinely relevant top hit is never dropped entirely.
-    context_matches = [m for m in matches if m["relevance_score"] >= MIN_CONTEXT_SCORE]
+    # Every chunk that clears the relevance bar goes into context, up to
+    # match_count as a ceiling — a broad, well-covered topic naturally gets
+    # more material than a narrow one, instead of always exactly the same
+    # fixed count regardless of how much is actually relevant. Fall back to
+    # the single best match so a genuinely relevant top hit is never
+    # dropped entirely.
+    context_matches = [m for m in matches if m["relevance_score"] >= MIN_CONTEXT_SCORE][:match_count]
     if not context_matches and matches:
         context_matches = matches[:1]
 
@@ -176,7 +226,9 @@ def search_documents(query, match_count=3, language="en"):
         model=CHAT_MODEL,
         messages=[{"role": "user", "content": build_prompt(query, context_matches, language)}],
     )
-    answer = completion.choices[0].message.content
+    answer = _self_check_and_revise(
+        query, completion.choices[0].message.content, context_matches, language
+    )
 
     # Gate expert_note strictly on relevance — never generate it just to
     # sound experienced when the retrieved content is a weak/tangential match.
@@ -335,7 +387,7 @@ def _strip_years(text):
     return _YEAR_TOKEN_RE.sub("", text).strip()
 
 
-def search_web(query, match_count=3, language="en"):
+def search_web(query, match_count=12, language="en"):
     """Web search (Tavily) plus an internal knowledge-base check run in
     parallel. web_findings is one entry per source, each tied to its own
     source name/URL/date — never a freeform paragraph, so attribution can't

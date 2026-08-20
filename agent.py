@@ -305,7 +305,7 @@ def _build_tools(capture, match_count, language="en"):
     return tool_list
 
 
-def run_agent(question, session_id=None, match_count=3, language="en"):
+def run_agent(question, session_id=None, match_count=12, language="en"):
     """Run one turn of the agent. `session_id` identifies the conversation
     thread — pass the same one back on follow-up turns to carry history
     forward via the checkpointer (see docs/TechSpec_v1.1.md §4.5). If
