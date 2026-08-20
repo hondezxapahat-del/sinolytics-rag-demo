@@ -1,4 +1,4 @@
-# Sinolytics RAG Demo
+# Sinolume RAG Demo
 
 A LangChain tool-calling agent over China policy/tech briefings — hybrid (vector + keyword) retrieval with batched LLM reranking, on-demand chart generation, live web search cross-checked against the internal knowledge base, and multi-turn conversation memory — paired with a small marketing frontend.
 
@@ -132,8 +132,8 @@ Thin FastAPI wrapper: `POST /ask` takes `{question, conversation_history, match_
 
 ### 6. Frontend
 
-- `index.html` — the marketing landing page (white background, black text, `#a4161a` red accent), linking into the ask page; the "Sinolytics" wordmark on the ask page links back here.
-- `ask.html` — the chat-style ask page. Maintains conversation history client-side and sends the last few turns with every request. Renders answers through a small markdown renderer (bold + bullets). On the web-search path, `web_findings` render as individual blocks (content + small-text source/date, source name linked to the original URL) instead of free prose, so a point can't visually detach from its citation; `internal_analysis`, when present, renders as its own visually distinct block titled "Sinolytics' prior analysis on this topic". Chart images render inline with a rounded border and soft shadow.
+- `index.html` — the marketing landing page (white background, black text, `#a4161a` red accent), linking into the ask page; the "Sinolume" wordmark on the ask page links back here.
+- `ask.html` — the chat-style ask page. Maintains conversation history client-side and sends the last few turns with every request. Renders answers through a small markdown renderer (bold + bullets). On the web-search path, `web_findings` render as individual blocks (content + small-text source/date, source name linked to the original URL) instead of free prose, so a point can't visually detach from its citation; `internal_analysis`, when present, renders as its own visually distinct block titled "Sinolume's prior analysis on this topic". Chart images render inline with a rounded border and soft shadow.
 
 ### 7. Data visualization tool
 

@@ -1,5 +1,5 @@
 <#
-  sinolyticsdemo.ps1 - one-click launcher for the Sinolytics RAG demo.
+  sinolyticsdemo.ps1 - one-click launcher for the Sinolume RAG demo.
 
   USAGE
     Double-click sinolyticsdemo.bat (recommended - no PowerShell prompts),

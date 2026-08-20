@@ -1,4 +1,4 @@
-# Sinolytics RAG Demo — Technical Design v1.1
+# Sinolume RAG Demo — Technical Design v1.1
 
 > This document is written against [PRD_v1.1.en.md](PRD_v1.1.en.md) and covers the parts the PRD explicitly deferred to "a later technical document" — evaluation methodology, internal/external fusion display, the human-confirmation workflow, and related design decisions.
 

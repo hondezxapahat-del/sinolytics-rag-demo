@@ -1,4 +1,4 @@
-# Sinolytics RAG Demo — 技术方案 v1.1
+# Sinolume RAG Demo — 技术方案 v1.1
 
 > 本文档基于 [PRD_v1.1.md](PRD_v1.1.md) 撰写，是 PRD 中留待"后续技术文档"解决的部分（评测方法论、内外部融合展示、人工确认工作流等）的具体设计。
 

@@ -44,7 +44,7 @@ if SUPABASE_DB_URL:
         _checkpointer = None
 
 SYSTEM_PROMPT = (
-    "You are a research assistant for Sinolytics, a China strategy advisory "
+    "You are a research assistant for Sinolume, a China strategy advisory "
     "firm. You have four possible tools: search_documents, generate_chart, "
     "generate_trend_prediction, and a web search tool.\n\n"
     "Decide which one to use (if any) by matching the question against these "
@@ -165,7 +165,7 @@ def _language_rule(language):
 def _build_tools(capture, match_count, language="en"):
     @tool
     def search_documents(query: str) -> str:
-        """Search the internal knowledge base (Sinolytics reports on Chinese
+        """Search the internal knowledge base (Sinolume reports on Chinese
         AI pricing and adoption, export controls, industry trends, etc.) and
         return an answer grounded in the retrieved passages. Use this for any
         factual or analytical question that might be covered by the stored
@@ -198,7 +198,7 @@ def _build_tools(capture, match_count, language="en"):
     @tool
     def generate_trend_prediction(topic: str) -> str:
         """Generate a short, forward-looking trend prediction for a topic, in
-        the voice of an internal Sinolytics analyst. Only call this for an
+        the voice of an internal Sinolume analyst. Only call this for an
         explicit forecast/outlook request (trigger words: 'predict',
         'forecast', 'outlook', 'what will happen', '预测', '展望', '未来会怎样').
         Predictions always require human confirmation before being shown —

@@ -1,4 +1,4 @@
-"""FastAPI layer for the Sinolytics agent: exposes POST /ask, wiring each
+"""FastAPI layer for the Sinolume agent: exposes POST /ask, wiring each
 request into the LangChain agent (agent.py) that routes between document
 search, chart generation, and web search."""
 

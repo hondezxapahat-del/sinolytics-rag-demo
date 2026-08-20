@@ -1,4 +1,4 @@
-# Sinolytics RAG Demo — PRD v1.2
+# Sinolume RAG Demo — PRD v1.2
 
 ## Background
 

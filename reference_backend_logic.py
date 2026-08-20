@@ -36,7 +36,7 @@ RELEVANCE_THRESHOLD = 6.5
 @tool
 def search_internal_documents(query: str) -> dict:
     """
-    在 Sinolytics 内部知识库里检索相关内容。
+    在 Sinolume 内部知识库里检索相关内容。
     返回值包含: answer（基于检索内容生成的回答）、
     expert_note（仅当检索内容相关性足够高时才有值，否则为空字符串）、
     is_relevant（相关性是否达标的布尔值，供上层判断要不要显示expert_note）
@@ -76,7 +76,7 @@ tools = [search_internal_documents, generate_price_chart, web_search_tool]
 # System prompt 是防止"生拉硬拽"的关键——明确告诉模型：
 # 历史对话只在真正相关时才参考，新话题要独立处理。
 # ---------------------------------------------------------------------
-SYSTEM_PROMPT = """You are a China policy analysis assistant for Sinolytics.
+SYSTEM_PROMPT = """You are a China policy analysis assistant for Sinolume.
 
 Available tools:
 - search_internal_documents: use for questions about China policy, industrial trends, supply chains, cybersecurity — anything likely covered by internal reports.

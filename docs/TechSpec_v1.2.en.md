@@ -1,4 +1,4 @@
-# Sinolytics RAG Demo — Technical Design v1.2
+# Sinolume RAG Demo — Technical Design v1.2
 
 > This document is written against [PRD_v1.2.en.md](PRD_v1.2.en.md) and describes the technical design behind login, the conversation-history list, the year-fabrication fix, language switching, and the answer-specificity fix. Unlike the v1.1 tech spec (design first, then implementation), this document is a factual record of code that was already written and tested.
 

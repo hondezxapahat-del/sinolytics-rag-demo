@@ -48,7 +48,7 @@ CHART_TOPIC_KEYWORDS = [
 ]
 
 # Product decision (2026-08-18 conversation): this product's audience is
-# Sinolytics' own clients, so a web search must never hand them a link to a
+# Sinolume's own clients, so a web search must never hand them a link to a
 # competing China-risk advisory firm's own paid-report page — that's the
 # opposite of what a client-facing tool should ever surface. This starting
 # list is derived from public research on comparable China-geopolitical-risk
@@ -133,7 +133,7 @@ def summarize_prior_experience(matches, question, language="en"):
     context = "\n\n---\n\n".join(match["content"] for match in matches)
     lang_name = _LANGUAGE_NAMES.get(language, "English")
     prompt = (
-        "You are reminding a colleague what Sinolytics' own internal research "
+        "You are reminding a colleague what Sinolume's own internal research "
         "already covers that's relevant to their current question. Write ONE "
         f"short sentence (max ~30 words), in {lang_name}, summarizing the most "
         "relevant takeaway from the passages below.\n\n"
@@ -454,7 +454,7 @@ def _draft_trend_prediction(topic, language="en"):
 
     prompt = (
         "You are drafting a short, forward-looking trend prediction in the "
-        "voice of a Sinolytics analyst, for internal review before it is "
+        "voice of a Sinolume analyst, for internal review before it is "
         "ever shown to a client. Base the prediction's reasoning style on "
         "the passages below (if any) — match their tone and how they reason "
         "from evidence, but the prediction itself is necessarily your own "
